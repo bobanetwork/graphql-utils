@@ -1,0 +1,36 @@
+{
+  "name": "@bobanetwork/graphql-utils",
+  "version": "1.0.0",
+  "description": "GraphQL services to be consumed by frontend/backend services.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bobanetwork/graphql-utils.git"
+  },
+  "author": "Enya Labs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bobanetwork/graphql-utils/issues"
+  },
+  "homepage": "https://github.com/bobanetwork/graphql-utils#readme",
+  "dependencies": {
+    "@apollo/client": "3.5.10",
+    "@ethersproject/providers": "^5.7.2",
+    "ethers": "^5.5.4",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^16.18.62",
+    "@types/node-fetch": "^2.6.11",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.2"
+  }
+}
