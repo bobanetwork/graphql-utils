@@ -8,7 +8,10 @@ import {
 import { BigNumberish } from 'ethers'
 import {EGraphQLService} from "./types";
 
-import fetch from 'node-fetch';
+let fetchLib = fetch
+if (!fetchLib) {
+    fetchLib = require('node-fetch');
+}
 
 
 export class GraphQLService {
@@ -154,7 +157,7 @@ export class GraphQLService {
             uri,
             link: new HttpLink({
                 uri,
-                fetch,
+                fetch: fetchLib,
             }),
             cache: new InMemoryCache(),
         })
@@ -185,3 +188,5 @@ export class GraphQLService {
         )
     }
 }
+
+export const graphQLService = new GraphQLService()

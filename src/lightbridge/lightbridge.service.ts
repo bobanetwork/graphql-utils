@@ -236,3 +236,5 @@ export class LightBridgeGraphQLService extends GraphQLService {
         )
     }
 }
+
+export const lightBridgeGraphQLService = new LightBridgeGraphQLService()

@@ -2,7 +2,8 @@
   "compilerOptions": {
     "allowJs": true,
     "lib": [
-      "es7"
+      "es7",
+      "dom"
     ],
     "target": "es2017",
     "module": "esnext",

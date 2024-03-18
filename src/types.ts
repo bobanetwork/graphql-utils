@@ -10,11 +10,11 @@ export enum EGraphQLService {
 export type MinimalNetworkConfig = {
     L2: {
         name: string,
-        chainId: string,
+        chainId: number,
     },
     L1: {
         name: string,
-        chainId: string,
+        chainId: number,
     }
 }
 

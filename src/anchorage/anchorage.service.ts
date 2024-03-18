@@ -12,7 +12,6 @@ import {GraphQLService} from "../graphql.service";
 import {gql} from "@apollo/client";
 import { JsonRpcProvider } from '@ethersproject/providers'
 import {ethers} from "ethers";
-import {defaultAbiCoder, keccak256} from "ethers/lib/utils";
 
 export class AnchorageGraphQLService extends GraphQLService {
     async findWithdrawalsProven(
@@ -534,7 +533,7 @@ export const handleProveWithdrawal = async (
             'uint256',
             'bytes',
         ]
-        const encoded = defaultAbiCoder.encode(types, [
+        const encoded = ethers.utils.defaultAbiCoder.encode(types, [
             logs[0].nonce,
             logs[0].sender,
             logs[0].target,
@@ -543,7 +542,7 @@ export const handleProveWithdrawal = async (
             logs[0].data,
         ])
 
-        const slot = keccak256(encoded)
+        const slot = ethers.utils.keccak256(encoded)
         const withdrawalHash = logs[0].withdrawalHash
         if (withdrawalHash !== slot) {
             return { error: 'Widthdraw hash does not match' }
