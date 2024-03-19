@@ -3,7 +3,7 @@ import {filterLatestGroupedSupportedTokens} from "../utils";
 import {GraphQLService} from "../graphql.service";
 import {LightBridgeAssetReceivedEvent, LightBridgeDisbursementSuccessEvent} from "./types";
 import {BigNumberish} from "ethers";
-import {gql} from "@apollo/client";
+import {gql} from "@apollo/client/core";
 
 export class LightBridgeGraphQLService extends GraphQLService {
     useLocal = false

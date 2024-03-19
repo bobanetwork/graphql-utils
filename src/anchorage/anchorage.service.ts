@@ -9,7 +9,7 @@ import {
 } from "./types";
 import {MinimalNetworkConfig} from "../types";
 import {GraphQLService} from "../graphql.service";
-import {gql} from "@apollo/client";
+import {gql} from "@apollo/client/core";
 import { JsonRpcProvider } from '@ethersproject/providers'
 import {ethers} from "ethers";
 

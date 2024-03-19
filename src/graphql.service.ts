@@ -4,7 +4,7 @@ import {
     gql,
     HttpLink,
     InMemoryCache,
-} from '@apollo/client'
+} from '@apollo/client/core'
 import { BigNumberish } from 'ethers'
 import {EGraphQLService} from "./types";
 
