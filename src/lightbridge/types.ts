@@ -1,6 +1,4 @@
 //#region events
-import {BigNumberish} from "ethers";
-
 export type LightBridgeDisbursementEvents =
     | LightBridgeDisbursementSuccessEvent
     | LightBridgeDisbursementFailedEvent
@@ -8,47 +6,47 @@ export type LightBridgeDisbursementEvents =
 export type LightBridgeAssetReceivedEvent = {
     __typename: 'AssetReceived'
     token: string
-    sourceChainId: BigNumberish
-    toChainId: BigNumberish
-    depositId: BigNumberish
+    sourceChainId: BigInt
+    toChainId: BigInt
+    depositId: BigInt
     emitter: string
-    amount: BigNumberish
+    amount: BigInt
     transactionHash_: string
-    block_number: BigNumberish
-    timestamp_: BigNumberish
+    block_number: BigInt
+    timestamp_: BigInt
 }
 
 export type LightBridgeDisbursementSuccessEvent = {
     __typename: 'DisbursementSuccess'
-    depositId: BigNumberish
+    depositId: BigInt
     to: string
     token: string
-    amount: BigNumberish
-    sourceChainId: BigNumberish
+    amount: BigInt
+    sourceChainId: BigInt
     transactionHash_: string
-    block_number: BigNumberish
-    timestamp_: BigNumberish
+    block_number: BigInt
+    timestamp_: BigInt
 }
 
 export type LightBridgeDisbursementFailedEvent = {
     __typename: 'DisbursementFailed'
-    depositId: BigNumberish
+    depositId: BigInt
     to: string
-    amount: BigNumberish
-    sourceChainId: BigNumberish
+    amount: BigInt
+    sourceChainId: BigInt
     transactionHash_: string
-    block_number: BigNumberish
-    timestamp_: BigNumberish
+    block_number: BigInt
+    timestamp_: BigInt
 }
 
 export type LightBridgeDisbursementRetrySuccessEvent = {
     __typename: 'DisbursementRetrySuccess'
-    depositId: BigNumberish
+    depositId: BigInt
     to: string
-    amount: BigNumberish
-    sourceChainId: BigNumberish
+    amount: BigInt
+    sourceChainId: BigInt
     transactionHash_: string
-    block_number: BigNumberish
-    timestamp_: BigNumberish
+    block_number: BigInt
+    timestamp_: BigInt
 }
 //#endregion
