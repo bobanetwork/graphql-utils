@@ -132,6 +132,18 @@ export class GraphQLService {
                 local: '',
             },
         },
+        // local eth
+        31337: {
+            [EGraphQLService.LightBridge]: {
+                gql: 'http://graph-node_eth:8000/subgraphs/name/light-bridge',
+            },
+        },
+        // local bnb
+        31338: {
+            [EGraphQLService.LightBridge]: {
+                gql: 'http://graph-node_bnb:8000/subgraphs/name/light-bridge',
+            },
+        },
     }
 
     getBridgeEndpoint = (chainId, service: EGraphQLService, useLocal = false) => {
