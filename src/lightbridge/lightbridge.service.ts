@@ -8,17 +8,29 @@ import {gql} from "@apollo/client";
 export class LightBridgeGraphQLService extends GraphQLService {
     useLocal = false
 
+    /** @param sourceChainId: Mandatory since it is also being used for determining the graphQl endpoint. */
     async queryAssetReceivedEvent(
-        walletAddress: string,
         sourceChainId: BigNumberish,
-        targetChainId: BigNumberish
+        targetChainId?: BigNumberish,
+        walletAddress?: string,
+        startBlock?: string,
+        toBlock?: string,
     ): Promise<LightBridgeAssetReceivedEvent[]> {
-        const query = gql(`query Teleportation($wallet: String!, 
-        $sourceChainId: BigInt!,
-        $targetChainId: BigInt!
+        const query = gql(`query Teleportation(
+        $wallet: String, 
+        $sourceChainId: BigInt,
+        $targetChainId: BigInt,
+        $startBlock: BigInt,
+        $toBlock: BigInt
         ) {
             assetReceiveds(
-              where: {and: [{emitter_contains_nocase: $wallet}, { sourceChainId: $sourceChainId }, { toChainId: $targetChainId }]}
+              where: {and: [
+              ${startBlock ? `{block_number_gte: $startBlock},` : ''}
+              ${toBlock ? `{block_number_lte: $toBlock},` : ''}
+              ${walletAddress ? `{emitter_contains_nocase: $wallet},` : ''} 
+              ${sourceChainId ? `{ sourceChainId: $sourceChainId },` : ''} 
+              ${targetChainId ? `{ toChainId: $targetChainId }` : ''}
+              ]}
             ) {
               token
               sourceChainId
@@ -33,9 +45,11 @@ export class LightBridgeGraphQLService extends GraphQLService {
           }`)
 
         const variables = {
+            startBlock,
+            toBlock,
             wallet: walletAddress,
-            sourceChainId: sourceChainId.toString(),
-            targetChainId: targetChainId.toString(),
+            sourceChainId: sourceChainId?.toString(),
+            targetChainId: targetChainId?.toString(),
         }
 
         return (
