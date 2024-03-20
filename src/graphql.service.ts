@@ -162,6 +162,7 @@ export class GraphQLService {
             service,
             useLocalGraphEndpoint
         )
+        console.log("conductQuery: Using graphQL endpoint -> ", uri, sourceChainId, service, useLocalGraphEndpoint, fetchLib)
         if (!uri) {
             return
         }

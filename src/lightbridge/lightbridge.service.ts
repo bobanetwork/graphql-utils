@@ -10,8 +10,8 @@ export class LightBridgeGraphQLService extends GraphQLService {
 
     /** @param sourceChainId: Mandatory since it is also being used for determining the graphQl endpoint. */
     async queryAssetReceivedEvent(
-        sourceChainId: BigNumberish,
-        targetChainId?: BigNumberish,
+        sourceChainId: string,
+        targetChainId?: string,
         walletAddress?: string,
         startBlock?: string,
         toBlock?: string,
@@ -48,8 +48,8 @@ export class LightBridgeGraphQLService extends GraphQLService {
             startBlock,
             toBlock,
             wallet: walletAddress,
-            sourceChainId: sourceChainId?.toString(),
-            targetChainId: targetChainId?.toString(),
+            sourceChainId: sourceChainId,
+            targetChainId: targetChainId,
         }
 
         return (
