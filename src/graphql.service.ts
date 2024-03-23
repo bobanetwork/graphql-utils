@@ -147,7 +147,11 @@ export class GraphQLService {
     }
 
     getBridgeEndpoint = (chainId, service: EGraphQLService, useLocal = false) => {
-        return this.GRAPHQL_ENDPOINTS[chainId][service][useLocal ? 'local' : 'gql']
+        const networkEndpoint = this.GRAPHQL_ENDPOINTS[chainId];
+        if (!networkEndpoint) {
+            throw new Error("No GraphQL endpoint for network: "+chainId)
+        }
+        return networkEndpoint[service][useLocal ? 'local' : 'gql']
     }
 
     async conductQuery(

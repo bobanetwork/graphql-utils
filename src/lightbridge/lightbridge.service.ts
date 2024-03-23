@@ -2,7 +2,7 @@ import {EGraphQLService} from "../types";
 import {filterLatestGroupedSupportedTokens} from "../utils";
 import {GraphQLService} from "../graphql.service";
 import {LightBridgeAssetReceivedEvent, LightBridgeDisbursementSuccessEvent} from "./types";
-import {BigNumberish} from "ethers";
+import {BigNumber, BigNumberish} from "ethers";
 import {gql} from "@apollo/client/core";
 
 export class LightBridgeGraphQLService extends GraphQLService {
@@ -10,21 +10,24 @@ export class LightBridgeGraphQLService extends GraphQLService {
 
     /** @param sourceChainId: Mandatory since it is also being used for determining the graphQl endpoint. */
     async queryAssetReceivedEvent(
-        sourceChainId: string,
-        targetChainId?: string,
+        sourceChainId: string|number,
+        targetChainId?: string|number,
         walletAddress?: string,
-        startBlock?: string,
-        toBlock?: string,
+        startBlock?: string|number,
+        toBlock?: string|number,
+        minDepositId?: number|BigNumber,
     ): Promise<LightBridgeAssetReceivedEvent[]> {
         const query = gql(`query Teleportation(
         $wallet: String, 
         $sourceChainId: BigInt,
         $targetChainId: BigInt,
         $startBlock: BigInt,
-        $toBlock: BigInt
+        $toBlock: BigInt,
+        $minDepositId: BigInt,
         ) {
             assetReceiveds(
               where: {and: [
+              ${minDepositId ? `{depositId_gte: $minDepositId},` : ''}
               ${startBlock ? `{block_number_gte: $startBlock},` : ''}
               ${toBlock ? `{block_number_lte: $toBlock},` : ''}
               ${walletAddress ? `{emitter_contains_nocase: $wallet},` : ''} 
@@ -50,6 +53,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
             wallet: walletAddress,
             sourceChainId: sourceChainId,
             targetChainId: targetChainId,
+            minDepositId,
         }
 
         return (
