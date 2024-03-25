@@ -32,8 +32,8 @@ export class LightBridgeGraphQLService extends GraphQLService {
               ${toBlock ? `{block_number_lte: $toBlock},` : ''}
               ${walletAddress ? `{emitter_contains_nocase: $wallet},` : ''} 
               ${sourceChainId ? `{ sourceChainId: $sourceChainId },` : ''} 
-              ${targetChainId ? `{ toChainId: $targetChainId }` : ''}
-              ${contract ? `{ contract: $contract }` : ''}
+              ${targetChainId ? `{ toChainId: $targetChainId },` : ''}
+              ${contract ? `{ contract: $contract }` : ''} // in the graph it is case insensitive and nocase only exists in Goldsky
               ]}
             ) {
               token
