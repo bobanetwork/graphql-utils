@@ -2,7 +2,6 @@ import {EGraphQLService} from "../types";
 import {filterLatestGroupedSupportedTokens} from "../utils";
 import {GraphQLService} from "../graphql.service";
 import {LightBridgeAssetReceivedEvent, LightBridgeDisbursementSuccessEvent} from "./types";
-import {BigNumber, BigNumberish} from "ethers";
 import {gql} from "@apollo/client/core";
 
 export class LightBridgeGraphQLService extends GraphQLService {
@@ -15,7 +14,8 @@ export class LightBridgeGraphQLService extends GraphQLService {
         walletAddress?: string,
         startBlock?: string|number,
         toBlock?: string|number,
-        minDepositId?: number|BigNumber,
+        minDepositId?: string|number,
+        contract?: string,
     ): Promise<LightBridgeAssetReceivedEvent[]> {
         const query = gql(`query Teleportation(
         $wallet: String, 
@@ -33,6 +33,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
               ${walletAddress ? `{emitter_contains_nocase: $wallet},` : ''} 
               ${sourceChainId ? `{ sourceChainId: $sourceChainId },` : ''} 
               ${targetChainId ? `{ toChainId: $targetChainId }` : ''}
+              ${contract ? `{ contract: $contract }` : ''}
               ]}
             ) {
               token
@@ -44,6 +45,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
               block_number
               timestamp_
               transactionHash_
+              contract
             }
           }`)
 
@@ -54,6 +56,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
             sourceChainId: sourceChainId,
             targetChainId: targetChainId,
             minDepositId,
+            contract,
         }
 
         return (
@@ -69,11 +72,11 @@ export class LightBridgeGraphQLService extends GraphQLService {
 
     async queryDisbursementSuccessEvent(
         walletAddress: string,
-        sourceChainId: BigNumberish,
-        destChainId: BigNumberish,
+        sourceChainId: number|string,
+        destChainId: number|string,
         token: string,
-        amount: BigNumberish,
-        depositId: BigNumberish
+        amount: number|string,
+        depositId: number|string
     ): Promise<LightBridgeDisbursementSuccessEvent | undefined> {
         if (!token) {
             return undefined
@@ -119,10 +122,10 @@ export class LightBridgeGraphQLService extends GraphQLService {
 
     async queryDisbursementFailedEvent(
         walletAddress: string,
-        sourceChainId: BigNumberish,
-        destChainId: BigNumberish,
-        amount: BigNumberish,
-        depositId: BigNumberish
+        sourceChainId: number|string,
+        destChainId: number|string,
+        amount: number|string,
+        depositId: number|string
     ) {
         const query =
             gql(`query Teleportation($wallet: String!, $sourceChainId: BigInt!, $amount: String!, $depositId: String!) {
@@ -169,10 +172,10 @@ export class LightBridgeGraphQLService extends GraphQLService {
 
     async queryDisbursementRetrySuccessEvent(
         walletAddress: string,
-        sourceChainId: BigNumberish,
-        destChainId: BigNumberish,
-        amount: BigNumberish,
-        depositId: BigNumberish
+        sourceChainId: number|string,
+        destChainId: number|string,
+        amount: number|string,
+        depositId: number|string
     ) {
         const query =
             gql(`query Teleportation($wallet: String!, $sourceChainId: BigInt!, $amount: String!, $depositId: String!) {
@@ -214,7 +217,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
     async querySupportedTokensBridge(
         currentNetworkId: any,
         tokens: Array<string>,
-        destChainId: BigNumberish
+        destChainId: number|string
     ) {
         const query = gql(`
     query GetSupportedTokens($tokens: [String!]!, $toChainId: BigInt!) {
