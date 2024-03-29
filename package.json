@@ -1,6 +1,6 @@
 {
   "name": "@bobanetwork/graphql-utils",
-  "version": "1.0.37",
+  "version": "1.0.38",
   "description": "GraphQL services to be consumed by frontend/backend services.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

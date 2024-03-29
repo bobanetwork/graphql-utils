@@ -112,6 +112,22 @@ export class GraphQLService {
                 local: '',
             },
         },
+
+        // Arbitrum Sepolia
+        421614: {
+            [EGraphQLService.LightBridge]: {
+                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-arbitrum-sepolia/v1/gn',
+                local: '',
+            },
+        },
+        // Optimism Sepolia
+        11155420: {
+            [EGraphQLService.LightBridge]: {
+                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-optimism-sepolia/v1/gn',
+                local: '',
+            },
+        },
+
         // Sepolia
         11155111: {
             [EGraphQLService.AnchorageBridge]: {
