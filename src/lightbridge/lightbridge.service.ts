@@ -17,6 +17,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
         minDepositId?: string|number,
         contract?: string,
     ): Promise<LightBridgeAssetReceivedEvent[]> {
+        // contract:  in the graph it is case insensitive and nocase only exists in Goldsky
         const query = gql(`query Teleportation(
         $wallet: String, 
         $sourceChainId: BigInt,
@@ -24,6 +25,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
         $startBlock: BigInt,
         $toBlock: BigInt,
         $minDepositId: BigInt,
+        $contract: Bytes,
         ) {
             assetReceiveds(
               where: {and: [
@@ -33,7 +35,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
               ${walletAddress ? `{emitter_contains_nocase: $wallet},` : ''} 
               ${sourceChainId ? `{ sourceChainId: $sourceChainId },` : ''} 
               ${targetChainId ? `{ toChainId: $targetChainId },` : ''}
-              ${contract ? `{ contract: $contract }` : ''} // in the graph it is case insensitive and nocase only exists in Goldsky
+              ${contract ? `{ contract: $contract }` : ''}
               ]}
             ) {
               token
@@ -45,7 +47,6 @@ export class LightBridgeGraphQLService extends GraphQLService {
               block_number
               timestamp_
               transactionHash_
-              contract
             }
           }`)
 
