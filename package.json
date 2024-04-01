@@ -1,9 +1,8 @@
 {
   "name": "@bobanetwork/graphql-utils",
-  "version": "1.0.38",
+  "version": "1.0.43",
   "description": "GraphQL services to be consumed by frontend/backend services.",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
@@ -25,7 +24,7 @@
     "@apollo/client": "3.5.10",
     "@ethersproject/providers": "^5.7.2",
     "ethers": "^5.5.4",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@types/node": "^16.18.62",
