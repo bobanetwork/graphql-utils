@@ -1,6 +1,16 @@
 //#region events
 import {BigNumberish} from "ethers";
 
+export type LightBridgeSupportedRouteEvents = {
+    transactionHash_: string
+    block_number: string
+    timestamp_: string
+    contractId_: string
+    token: string
+    toChainId: string
+    supported: boolean
+}
+
 export type LightBridgeDisbursementEvents =
     | LightBridgeDisbursementSuccessEvent
     | LightBridgeDisbursementFailedEvent

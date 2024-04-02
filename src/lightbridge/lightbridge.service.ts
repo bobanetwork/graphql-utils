@@ -1,7 +1,11 @@
 import {EGraphQLService} from "../types";
 import {filterLatestGroupedSupportedTokens} from "../utils";
 import {GraphQLService} from "../graphql.service";
-import {LightBridgeAssetReceivedEvent, LightBridgeDisbursementSuccessEvent} from "./types";
+import {
+    LightBridgeAssetReceivedEvent, LightBridgeDisbursementFailedEvent, LightBridgeDisbursementRetrySuccessEvent,
+    LightBridgeDisbursementSuccessEvent,
+    LightBridgeSupportedRouteEvents
+} from "./types";
 import {gql} from "@apollo/client/core";
 
 export class LightBridgeGraphQLService extends GraphQLService {
@@ -127,7 +131,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
         destChainId: number|string,
         amount: number|string,
         depositId: number|string
-    ) {
+    ): Promise<LightBridgeDisbursementFailedEvent | undefined> {
         const query =
             gql(`query Teleportation($wallet: String!, $sourceChainId: BigInt!, $amount: String!, $depositId: String!) {
   disbursementFaileds(
@@ -177,7 +181,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
         destChainId: number|string,
         amount: number|string,
         depositId: number|string
-    ) {
+    ): Promise<LightBridgeDisbursementRetrySuccessEvent | undefined> {
         const query =
             gql(`query Teleportation($wallet: String!, $sourceChainId: BigInt!, $amount: String!, $depositId: String!) {
   disbursementRetrySuccesses(
@@ -217,14 +221,12 @@ export class LightBridgeGraphQLService extends GraphQLService {
 
     async querySupportedTokensBridge(
         currentNetworkId: any,
-        tokens: Array<string>,
         destChainId: number|string
-    ) {
+    ): Promise<LightBridgeSupportedRouteEvents[]> {
         const query = gql(`
-    query GetSupportedTokens($tokens: [String!]!, $toChainId: BigInt!) {
+    query GetSupportedTokens($toChainId: BigInt!) {
       tokenSupporteds(
         where: { 
-          token_in: $tokens, 
           toChainId: $toChainId 
         },
         order_by: { block_number: desc }
@@ -241,7 +243,6 @@ export class LightBridgeGraphQLService extends GraphQLService {
     }
   `)
         const variables = {
-            tokens,
             toChainId: destChainId,
         }
 
