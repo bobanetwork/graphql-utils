@@ -7,6 +7,7 @@ import {
     LightBridgeSupportedRouteEvents
 } from "./types";
 import {gql} from "@apollo/client/core";
+import {BigNumberish} from "ethers";
 
 export class LightBridgeGraphQLService extends GraphQLService {
     useLocal = false
@@ -220,7 +221,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
     }
 
     async querySupportedTokensBridge(
-        currentNetworkId: any,
+        currentNetworkId: BigNumberish,
         destChainId: number|string
     ): Promise<LightBridgeSupportedRouteEvents[]> {
         const query = gql(`

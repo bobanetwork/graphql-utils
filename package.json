@@ -8,7 +8,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "@types/node": "^16.18.62",
     "@types/node-fetch": "^2.6.11",
     "tsup": "^8.0.2",
