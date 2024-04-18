@@ -15,7 +15,8 @@ import {ethers} from "ethers";
 
 export class AnchorageGraphQLService extends GraphQLService {
     async findWithdrawalsProven(
-        withdrawalHashes: string[]
+        withdrawalHashes: string[],
+        l1ChainId: string | number
     ): Promise<GQLWithdrawalProvenEvent[]> {
         try {
             const qry = gql`
@@ -36,7 +37,7 @@ export class AnchorageGraphQLService extends GraphQLService {
                 await this.conductQuery(
                     qry,
                     { withdrawalHash: withdrawalHashes },
-                    11155111, // @todo make sure chain driven from connection
+                    l1ChainId,
                     EGraphQLService.AnchorageBridge
                 )
             )?.data.withdrawalProvens
@@ -47,7 +48,8 @@ export class AnchorageGraphQLService extends GraphQLService {
     }
 
     async findWithdrawalsFinalized(
-        withdrawalHashes: string[]
+        withdrawalHashes: string[],
+        l1ChainId: string | number
     ): Promise<GQLWithdrawalFinalizedEvent[]> {
         try {
             const graphqlQuery = gql`
@@ -67,7 +69,7 @@ export class AnchorageGraphQLService extends GraphQLService {
                 await this.conductQuery(
                     graphqlQuery,
                     { withdrawalHash: withdrawalHashes },
-                    11155111, // @todo make sure chain driven from connection
+                    l1ChainId,
                     EGraphQLService.AnchorageBridge
                 )
             )?.data.withdrawalFinalizeds
@@ -77,7 +79,8 @@ export class AnchorageGraphQLService extends GraphQLService {
     }
 
     async findWithdrawalsInitiated(
-        address: string
+        address: string,
+        l2ChainId: number | string
     ): Promise<GQPWithdrawalInitiatedEvent[]> {
         try {
             const qry = gql`
@@ -101,7 +104,7 @@ export class AnchorageGraphQLService extends GraphQLService {
                 await this.conductQuery(
                     qry,
                     { address: address.toLowerCase() },
-                    28882,
+                    l2ChainId,
                     EGraphQLService.AnchorageBridge
                 )
             )?.data.withdrawalInitiateds
@@ -111,7 +114,9 @@ export class AnchorageGraphQLService extends GraphQLService {
     }
 
     async findWithdrawalMessagedPassed(
-        withdrawalHash: string
+        withdrawalHash: string,
+        l2ChainId: string | number
+
     ): Promise<GQL2ToL1MessagePassedEvent[]> {
         try {
             const qry = gql`
@@ -138,7 +143,7 @@ export class AnchorageGraphQLService extends GraphQLService {
                     {
                         withdrawalHash,
                     },
-                    28882,
+                    l2ChainId,
                     EGraphQLService.AnchorageBridge
                 )
             )?.data.messagePasseds
@@ -148,7 +153,8 @@ export class AnchorageGraphQLService extends GraphQLService {
     }
 
     async findWithdrawalMessagesPassed(
-        blockNumbers: string[]
+        blockNumbers: string[],
+        chainId: string | number
     ): Promise<GQL2ToL1MessagePassedEvent[]> {
         try {
             const qry = gql`
@@ -173,7 +179,7 @@ export class AnchorageGraphQLService extends GraphQLService {
                 await this.conductQuery(
                     qry,
                     { blockNumbers },
-                    28882,
+                    chainId,
                     EGraphQLService.AnchorageBridge
                 )
             )?.data.messagePasseds
@@ -211,7 +217,7 @@ export class AnchorageGraphQLService extends GraphQLService {
                     {
                         address: address.toLowerCase(),
                     },
-                    28882,
+                    networkConfig.L2.chainId,
                     EGraphQLService.AnchorageBridge
                 )
             )?.data.depositFinalizeds
@@ -343,14 +349,16 @@ export class AnchorageGraphQLService extends GraphQLService {
         address,
         networkConfig: MinimalNetworkConfig
     ) {
-        const withdrawalsInitiated = await this.findWithdrawalsInitiated(address)
+        const l1ChainId = networkConfig.L1.chainId;
+        const l2ChainId = networkConfig.L1.chainId;
+        const withdrawalsInitiated = await this.findWithdrawalsInitiated(address, l2ChainId)
         const messagesPassed = await this.findWithdrawalMessagesPassed(
-            withdrawalsInitiated.map((wI) => wI.block_number)
+            withdrawalsInitiated.map((wI) => wI.block_number), l2ChainId
         )
         const withdrawalHashes = messagesPassed.map((mP) => mP.withdrawalHash)
-        const provenWithdrawals = await this.findWithdrawalsProven(withdrawalHashes)
+        const provenWithdrawals = await this.findWithdrawalsProven(withdrawalHashes, l1ChainId)
         const finalizedWithdrawals =
-            await this.findWithdrawalsFinalized(withdrawalHashes)
+            await this.findWithdrawalsFinalized(withdrawalHashes, l1ChainId)
 
         const withdrawalTransactions: any[] = []
         for (const withdrawalHashCandidate of withdrawalHashes) {
@@ -515,7 +523,7 @@ export const handleProveWithdrawal = async (
 
         let logs = await anchorageGraphQLService.findWithdrawalMessagesPassed([
             txInfo.blockNumber.toString(),
-        ])
+        ], networkService.networkConfig.L2.chainId)
 
         if (txInfo.withdrawalHash) {
             logs = logs.filter((b) => b!.withdrawalHash === txInfo.withdrawalHash)
