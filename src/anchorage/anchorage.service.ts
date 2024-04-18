@@ -350,7 +350,7 @@ export class AnchorageGraphQLService extends GraphQLService {
         networkConfig: MinimalNetworkConfig
     ) {
         const l1ChainId = networkConfig.L1.chainId;
-        const l2ChainId = networkConfig.L1.chainId;
+        const l2ChainId = networkConfig.L2.chainId;
         const withdrawalsInitiated = await this.findWithdrawalsInitiated(address, l2ChainId)
         const messagesPassed = await this.findWithdrawalMessagesPassed(
             withdrawalsInitiated.map((wI) => wI.block_number), l2ChainId
