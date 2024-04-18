@@ -339,6 +339,7 @@ export class AnchorageGraphQLService extends GraphQLService {
                         amount: event.amount || event.value,
                         token: event.l2Token,
                         originChainId: networkConfig.L2.chainId,
+                        timeStamp: block.timestamp,
                     },
         }
     }
