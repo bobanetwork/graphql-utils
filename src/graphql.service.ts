@@ -62,33 +62,11 @@ export class GraphQLService {
                 local: '',
             },
         },
-        // Goerli
-        5: {
-            [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-goerli/v1/gn',
-                local: '',
-            },
-            [EGraphQLService.DAO]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/dao-boba-goerli/v2/gn',
-                local: '',
-            },
-        },
         // BNB testnet
         97: {
             [EGraphQLService.LightBridge]: {
                 gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-chapel/v1/gn',
                 local: '',
-            },
-        },
-        // Boba Goerli
-        2888: {
-            [EGraphQLService.DAO]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/dao-boba-goerli/v2/gn',
-                local: '',
-            },
-            [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-boba-goerli/v1/gn',
-                local: 'http://127.0.0.1:8000/subgraphs/name/boba/Bridges',
             },
         },
         // Boba BNB testnet
@@ -98,21 +76,6 @@ export class GraphQLService {
                 local: 'http://127.0.0.1:8002/subgraphs/name/boba/Bridges',
             },
         },
-        // Arbitrum Goerli
-        421613: {
-            [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-arbitrum-goerli/v1/gn',
-                local: '',
-            },
-        },
-        // Optimism Goerli
-        420: {
-            [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-optimism-goerli/v1/gn',
-                local: '',
-            },
-        },
-
         // Arbitrum Sepolia
         421614: {
             [EGraphQLService.LightBridge]: {
