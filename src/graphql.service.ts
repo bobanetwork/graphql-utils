@@ -18,6 +18,9 @@ export class GraphQLService {
     GRAPHQL_ENDPOINTS = {
         // ETH Mainnet
         1: {
+            [EGraphQLService.AnchorageBridge]: {
+                gql: "https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/anchorage-bridge-mainnet/v1/gn"
+            },
             [EGraphQLService.LightBridge]: {
                 gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-mainnet/v1/gn',
                 local: '',
@@ -39,6 +42,9 @@ export class GraphQLService {
         },
         // Boba ETH
         288: {
+            [EGraphQLService.AnchorageBridge]: {
+                gql: "https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/anchorage-bridge-boba-eth/v1/gn"
+            },
             [EGraphQLService.DAO]: {
                 gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/dao-boba-eth/v1/gn',
                 local: '',
