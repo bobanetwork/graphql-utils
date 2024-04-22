@@ -567,15 +567,11 @@ export const handleProveWithdrawal = async (
             return { error: 'Networkservice provider not set' }
         }
 
-        const filter = txInfo.blockHash
-            ? { blockHash: txInfo.blockHash }
-            : { blockNumber: txInfo.blockNumber }
-
         console.log('requesting proof...')
         const proof = await networkService.L2Provider!.send('eth_getProof', [
             networkService.addresses.L2ToL1MessagePasser,
             [messageSlot],
-            filter,
+            "latest",
         ])
 
         console.log('proof requested!', proof)
