@@ -1,6 +1,6 @@
 {
   "name": "@bobanetwork/graphql-utils",
-  "version": "1.0.45",
+  "version": "1.1.6",
   "description": "GraphQL services to be consumed by frontend/backend services.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
