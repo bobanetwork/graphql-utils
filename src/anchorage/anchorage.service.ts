@@ -567,14 +567,11 @@ export const handleProveWithdrawal = async (
             return { error: 'Networkservice provider not set' }
         }
 
-        console.log('requesting proof...')
         const proof = await networkService.L2Provider!.send('eth_getProof', [
             networkService.addresses.L2ToL1MessagePasser,
             [messageSlot],
-            "latest",
+            ethers.utils.hexlify(txInfo.blockNumber),
         ])
-
-        console.log('proof requested!', proof)
 
         // waiting period before claiming
         let latestBlockOnL1 =
