@@ -522,9 +522,11 @@ export const handleProveWithdrawal = async (
             return { error: 'OptimismPortal / L2ToL1MessagePasser not initialized!' }
         }
 
-        let logs = await anchorageGraphQLService.findWithdrawalMessagesPassed([
-            txInfo.blockNumber.toString(),
-        ], networkService.networkConfig.L2.chainId)
+        let logs: Array<any> = await networkService.L2ToL1MessagePasser.queryFilter(
+            networkService.L2ToL1MessagePasser.filters.MessagePassed(),
+            txInfo.blockNumber,
+            txInfo.blockNumber
+        )
 
         if (txInfo.withdrawalHash) {
             logs = logs.filter((b) => b!.withdrawalHash === txInfo.withdrawalHash)
@@ -567,19 +569,6 @@ export const handleProveWithdrawal = async (
             return { error: 'Networkservice provider not set' }
         }
 
-        const filter = txInfo.blockHash
-            ? { blockHash: txInfo.blockHash }
-            : { blockNumber: txInfo.blockNumber }
-
-        console.log('requesting proof...')
-        const proof = await networkService.L2Provider!.send('eth_getProof', [
-            networkService.addresses.L2ToL1MessagePasser,
-            [messageSlot],
-            filter,
-        ])
-
-        console.log('proof requested!', proof)
-
         // waiting period before claiming
         let latestBlockOnL1 =
             await networkService.L2OutputOracle.latestBlockNumber()
@@ -600,7 +589,16 @@ export const handleProveWithdrawal = async (
             [proposalBlockNumber.toNumber(), false]
         )
 
-        const signer = await networkService.provider?.getSigner()
+        console.log('requesting proof...')
+        const proof = await networkService.L2Provider!.send('eth_getProof', [
+            networkService.addresses.L2ToL1MessagePasser,
+            [messageSlot],
+            proposalBlock,
+        ])
+
+        console.log('proof requested!', proof)
+
+        const signer = networkService.provider?.getSigner()
         console.log(`sending request with signer!!`, signer)
         const proveTx = await networkService.OptimismPortal.connect(
             signer
@@ -620,10 +618,7 @@ export const handleProveWithdrawal = async (
                 proof.storageHash,
                 proposalBlock.hash,
             ],
-            proof.storageProof[0].proof,
-            {
-                gasLimit: 7_000_000,
-            }
+            proof.storageProof[0].proof
         )
         console.log(`waiting for !!`)
         await proveTx.wait()
