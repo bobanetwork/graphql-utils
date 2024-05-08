@@ -522,12 +522,14 @@ export const handleProveWithdrawal = async (
             return { error: 'OptimismPortal / L2ToL1MessagePasser not initialized!' }
         }
 
-        let logs = await anchorageGraphQLService.findWithdrawalMessagesPassed([
-            txInfo.blockNumber.toString(),
-        ], networkService.networkConfig.L2.chainId)
+        let logs: Array<any> = await networkService.L2ToL1MessagePasser.queryFilter(
+            networkService.L2ToL1MessagePasser.filters.MessagePassed(),
+            txInfo.blockNumber,
+            txInfo.blockNumber
+        )
 
         if (txInfo.withdrawalHash) {
-            logs = logs.filter((b) => b!.withdrawalHash === txInfo.withdrawalHash)
+            logs = logs.filter((b) => b!.args.withdrawalHash === txInfo.withdrawalHash)
         }
 
         if (!logs || logs.length !== 1 || !logs[0]) {
@@ -543,16 +545,16 @@ export const handleProveWithdrawal = async (
             'bytes',
         ]
         const encoded = ethers.utils.defaultAbiCoder.encode(types, [
-            logs[0].nonce,
-            logs[0].sender,
-            logs[0].target,
-            logs[0].value,
-            logs[0].gasLimit,
-            logs[0].data,
+            logs[0].args.nonce,
+            logs[0].args.sender,
+            logs[0].args.target,
+            logs[0].args.value,
+            logs[0].args.gasLimit,
+            logs[0].args.data,
         ])
 
         const slot = ethers.utils.keccak256(encoded)
-        const withdrawalHash = logs[0].withdrawalHash
+        const withdrawalHash = logs[0].args.withdrawalHash
         if (withdrawalHash !== slot) {
             return { error: 'Widthdraw hash does not match' }
         }
@@ -566,19 +568,6 @@ export const handleProveWithdrawal = async (
         if (!networkService.provider) {
             return { error: 'Networkservice provider not set' }
         }
-
-        const filter = txInfo.blockHash
-            ? { blockHash: txInfo.blockHash }
-            : { blockNumber: txInfo.blockNumber }
-
-        console.log('requesting proof...')
-        const proof = await networkService.L2Provider!.send('eth_getProof', [
-            networkService.addresses.L2ToL1MessagePasser,
-            [messageSlot],
-            filter,
-        ])
-
-        console.log('proof requested!', proof)
 
         // waiting period before claiming
         let latestBlockOnL1 =
@@ -600,18 +589,25 @@ export const handleProveWithdrawal = async (
             [proposalBlockNumber.toNumber(), false]
         )
 
-        const signer = await networkService.provider?.getSigner()
-        console.log(`sending request with signer!!`, signer)
+        console.log('requesting proof', proposalBlock, messageSlot)
+        const proof = await networkService.L2Provider!.send('eth_getProof', [
+            networkService.addresses.L2ToL1MessagePasser,
+            [messageSlot],
+            proposalBlock.number, // reading hex block number.
+        ])
+
+        console.log('proof requested!', proof)
+        const signer = networkService.provider?.getSigner()
         const proveTx = await networkService.OptimismPortal.connect(
             signer
         ).proveWithdrawalTransaction(
             [
-                logs[0].nonce,
-                logs[0].sender,
-                logs[0].target,
-                logs[0].value,
-                logs[0].gasLimit,
-                logs[0].data,
+                logs[0].args.nonce,
+                logs[0].args.sender,
+                logs[0].args.target,
+                logs[0].args.value,
+                logs[0].args.gasLimit,
+                logs[0].args.data,
             ],
             l2OutputIndex,
             [
@@ -620,14 +616,12 @@ export const handleProveWithdrawal = async (
                 proof.storageHash,
                 proposalBlock.hash,
             ],
-            proof.storageProof[0].proof,
-            {
-                gasLimit: 7_000_000,
-            }
+            proof.storageProof[0].proof
         )
         console.log(`waiting for !!`)
-        await proveTx.wait()
-        return logs
+        const txReceipt = await proveTx.wait()
+        console.log(`txReceipt`, txReceipt)
+        return logs;
     } catch (error) {
         console.log(`Err: proveWithdrwal`, error)
         throw new Error('Failed to prove withdrawal!')
