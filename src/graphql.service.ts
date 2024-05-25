@@ -19,7 +19,7 @@ export class GraphQLService {
         // ETH Mainnet
         1: {
             [EGraphQLService.AnchorageBridge]: {
-                gql: "https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/anchorage-bridge-mainnet/v1/gn"
+                gql: "https://api.studio.thegraph.com/query/74594/anchorage-eth/version/latest"
             },
             [EGraphQLService.LightBridge]: {
                 gql: 'https://api.studio.thegraph.com/query/74594/lightbridge/version/latest',
@@ -92,7 +92,7 @@ export class GraphQLService {
         // Optimism Sepolia
         11155420: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-optimism-sepolia/v1/gn',
+                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge-op-sep/version/latest',
                 local: '',
             },
         },
@@ -103,7 +103,7 @@ export class GraphQLService {
                 gql: 'https://api.studio.thegraph.com/query/74594/anchorage-sepolia/version/latest',
             },
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-sepolia/v1/gn',
+                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge-sep/version/latest',
                 local: '',
             },
         },
