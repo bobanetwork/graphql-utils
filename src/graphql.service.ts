@@ -22,21 +22,21 @@ export class GraphQLService {
                 gql: "https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/anchorage-bridge-mainnet/v1/gn"
             },
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-mainnet/v1/gn',
+                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge/version/latest',
                 local: '',
             },
         },
         // Arbitrum One
         42161: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-arbitrum-one/v1/gn',
+                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge-arb/version/latest',
                 local: '',
             },
         },
         // Optimism Mainnet
         10: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-optimism/v1/gn',
+                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge-op/version/latest',
                 local: '',
             },
         },
@@ -64,7 +64,7 @@ export class GraphQLService {
         // BSC
         56: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-bsc/v1/gn',
+                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge-bnb/version/latest',
                 local: '',
             },
         },
@@ -85,7 +85,7 @@ export class GraphQLService {
         // Arbitrum Sepolia
         421614: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-arbitrum-sepolia/v1/gn',
+                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge-arb-sep/version/latest',
                 local: '',
             },
         },
@@ -100,7 +100,7 @@ export class GraphQLService {
         // Sepolia
         11155111: {
             [EGraphQLService.AnchorageBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/anchorage-bridging-sepolia/v1/gn',
+                gql: 'https://api.studio.thegraph.com/query/74594/anchorage-sepolia/version/latest',
             },
             [EGraphQLService.LightBridge]: {
                 gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-sepolia/v1/gn',
