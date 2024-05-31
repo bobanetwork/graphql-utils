@@ -5,7 +5,7 @@ import {
     HttpLink,
     InMemoryCache,
 } from '@apollo/client/core'
-import { BigNumberish } from 'ethers'
+import {BigNumberish} from 'ethers'
 import {EGraphQLService} from "./types";
 
 let fetchLib = fetch
@@ -13,30 +13,36 @@ if (!fetchLib) {
     fetchLib = require('node-fetch');
 }
 
-
 export class GraphQLService {
+    private readonly apikey = '' // TODO
+    private readonly baseUri = `https://gateway-arbitrum.network.thegraph.com/api/${this.apikey}/subgraphs/id`
+
+    private withSubgraphId(subgraphId: string) {
+        return `${this.baseUri}/${subgraphId}`
+    }
+
     GRAPHQL_ENDPOINTS = {
         // ETH Mainnet
         1: {
             [EGraphQLService.AnchorageBridge]: {
-                gql: "https://api.studio.thegraph.com/query/74594/anchorage-eth/version/latest"
+                gql: this.withSubgraphId('5t1nkHHxvmfUvPjwCzDVeP1SMgTAc814HscCXeE9AAeG')
             },
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge/version/latest',
+                gql: this.withSubgraphId('R3R96j3nVT8oWKfS9zBzrPkFfMC283jiQoEitQ2SFvy'),
                 local: '',
             },
         },
         // Arbitrum One
         42161: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge-arb/version/latest',
+                gql: this.withSubgraphId('48MG6smPELHeemANcRvssCWj8rLpBXKisRzRgmW7Pg7o'),
                 local: '',
             },
         },
         // Optimism Mainnet
         10: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge-op/version/latest',
+                gql: this.withSubgraphId('xUD6iaJk38vmWfEkYm5LwkxeTUADCcEtuujfLCJsHac'),
                 local: '',
             },
         },
@@ -64,14 +70,14 @@ export class GraphQLService {
         // BSC
         56: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge-bnb/version/latest',
+                gql: this.withSubgraphId('4Eoi62aX8V1DCebNX4mzPi7rfceFaRAeZ3xt7AYVowpy'),
                 local: '',
             },
         },
         // BNB testnet
         97: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-chapel/v1/gn',
+                gql: this.withSubgraphId('B8nR7fCE2KFV3oMJcLTDd56p7WQsoPH7wvBRRoqmocP8'),
                 local: '',
             },
         },
@@ -85,14 +91,14 @@ export class GraphQLService {
         // Arbitrum Sepolia
         421614: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge-arb-sep/version/latest',
+                gql: this.withSubgraphId('YXCHfzTAzcy5ibTXjwmMkLj5uTEsaGiJvy9cP3YDaAp'),
                 local: '',
             },
         },
         // Optimism Sepolia
         11155420: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge-op-sep/version/latest',
+                gql: this.withSubgraphId('GANXEysDoWzxiRRVYG9tPch6K6DLRAYAnw7qJ7ph7B2P'),
                 local: '',
             },
         },
@@ -100,10 +106,10 @@ export class GraphQLService {
         // Sepolia
         11155111: {
             [EGraphQLService.AnchorageBridge]: {
-                gql: 'https://api.studio.thegraph.com/query/74594/anchorage-sepolia/version/latest',
+                gql: this.withSubgraphId('EYTKAV3BfXULmm8aH2k31zqLgAy3FrTCXW93sFzz4vc4'),
             },
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.studio.thegraph.com/query/74594/lightbridge-sep/version/latest',
+                gql: this.withSubgraphId('BmRWu64ZZQc7m6cBGqwfuZ4QBoBBZ2ijTbziR8PZ2tCv'),
                 local: '',
             },
         },
@@ -134,7 +140,7 @@ export class GraphQLService {
     getBridgeEndpoint = (chainId, service: EGraphQLService, useLocal = false) => {
         const networkEndpoint = this.GRAPHQL_ENDPOINTS[chainId];
         if (!networkEndpoint) {
-            throw new Error("No GraphQL endpoint for network: "+chainId)
+            throw new Error("No GraphQL endpoint for network: " + chainId)
         }
         return networkEndpoint[service][useLocal ? 'local' : 'gql']
     }
@@ -169,7 +175,7 @@ export class GraphQLService {
         })
     }
 
-    async queryBridgeProposalCreated({ sourceChainId }) {
+    async queryBridgeProposalCreated({sourceChainId}) {
         const query = gql(
             `query {
           proposalCreateds{
