@@ -49,7 +49,7 @@ export class GraphQLService {
         // Boba ETH
         288: {
             [EGraphQLService.AnchorageBridge]: {
-                gql: "https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/anchorage-bridge-boba-eth/v1/gn"
+                gql: this.withSubgraphId("BkDvK8QHM8HRHCQtM6CSBjF4ipH1rW4uLBnMGN28JzwM"),
             },
             [EGraphQLService.DAO]: {
                 gql: this.withSubgraphId('2p7KCVnBeNSnTVwMfJC9NENtEKwZn6hv45CU4Cf6PczW'),
@@ -63,7 +63,7 @@ export class GraphQLService {
         // Boba BNB
         56288: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-boba-bnb/v1/gn',
+                gql: 'http://34.203.29.74:8000/subgraphs/name/boba-bnb-l2/graphql',
                 local: '',
             },
         },
@@ -84,7 +84,7 @@ export class GraphQLService {
         // Boba BNB testnet
         9728: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-boba-bnb-testnet/v1/gn',
+                gql: 'http://34.203.29.74:8000/subgraphs/name/boba-bnb-l2-testnet/graphql\n',
                 local: 'http://127.0.0.1:8002/subgraphs/name/boba/Bridges',
             },
         },
