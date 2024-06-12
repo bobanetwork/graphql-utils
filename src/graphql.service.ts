@@ -52,11 +52,11 @@ export class GraphQLService {
                 gql: "https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/anchorage-bridge-boba-eth/v1/gn"
             },
             [EGraphQLService.DAO]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/dao-boba-eth/v1/gn',
+                gql: this.withSubgraphId('2p7KCVnBeNSnTVwMfJC9NENtEKwZn6hv45CU4Cf6PczW'),
                 local: '',
             },
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-boba-eth/v1/gn',
+                gql: this.withSubgraphId('34UUDYdzZFX7afhysqX7JodzKngJmjsFKJDtWsTxi9UA'),
                 local: '',
             },
         },
@@ -116,10 +116,10 @@ export class GraphQLService {
         // Boba Sepolia
         28882: {
             [EGraphQLService.AnchorageBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/anchorage-bridging-boba-sepolia/v1/gn',
+                gql: this.withSubgraphId('7m4LZ832oV3wtb77cHiKwQG9hrxNM9iPSEHfNGJjR2Qg'),
             },
             [EGraphQLService.LightBridge]: {
-                gql: 'https://api.goldsky.com/api/public/project_clq6jph4q9t2p01uja7p1f0c3/subgraphs/light-bridge-boba-sepolia/v1/gn',
+                gql: this.withSubgraphId('81QRKk7eEuakQHGmxi6p6GY6ruVnQhA4rBWKvbfnxdPQ'),
                 local: '',
             },
         },
