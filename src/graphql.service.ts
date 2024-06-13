@@ -14,7 +14,7 @@ if (!fetchLib) {
 }
 
 export class GraphQLService {
-    private readonly apikey = '' // TODO
+    private readonly apikey = process.env.THE_GRAPH_API_KEY
     private readonly baseUri = `https://gateway-arbitrum.network.thegraph.com/api/${this.apikey}/subgraphs/id`
 
     private withSubgraphId(subgraphId: string) {
