@@ -8,6 +8,8 @@ import {
 import {BigNumberish} from 'ethers'
 import {EGraphQLService} from "./types";
 
+require('dotenv').config();
+
 let fetchLib = fetch
 if (!fetchLib) {
     fetchLib = require('node-fetch');

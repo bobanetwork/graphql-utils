@@ -26,6 +26,7 @@
     "@apollo/client": "3.5.10",
     "@ethersproject/providers": "^5.7.2",
     "@types/jest": "^29.5.12",
+    "dotenv": "^16.4.5",
     "ethers": "^5.5.4",
     "node-fetch": "^2.6.1",
     "ts-jest": "^29.1.2"
