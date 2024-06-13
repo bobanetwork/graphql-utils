@@ -1,5 +1,5 @@
 import {EGraphQLService} from "../types";
-import {filterLatestGroupedSupportedTokens} from "../utils";
+import {filterLatestGroupedSupportedTokens, retainOldStructure} from "../utils";
 import {GraphQLService} from "../graphql.service";
 import {
     LightBridgeAssetReceivedEvent, LightBridgeDisbursementFailedEvent, LightBridgeDisbursementRetrySuccessEvent,
@@ -14,12 +14,12 @@ export class LightBridgeGraphQLService extends GraphQLService {
 
     /** @param sourceChainId: Mandatory since it is also being used for determining the graphQl endpoint. */
     async queryAssetReceivedEvent(
-        sourceChainId: string|number,
-        targetChainId?: string|number,
+        sourceChainId: string | number,
+        targetChainId?: string | number,
         walletAddress?: string,
-        startBlock?: string|number,
-        toBlock?: string|number,
-        minDepositId?: string|number,
+        startBlock?: string | number,
+        toBlock?: string | number,
+        minDepositId?: string | number,
         contract?: string,
     ): Promise<LightBridgeAssetReceivedEvent[]> {
         // contract:  in the graph it is case insensitive and nocase only exists in Goldsky
@@ -37,7 +37,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
               ${minDepositId ? `{depositId_gte: $minDepositId},` : ''}
               ${startBlock ? `{block_number_gte: $startBlock},` : ''}
               ${toBlock ? `{block_number_lte: $toBlock},` : ''}
-              ${walletAddress ? `{emitter_contains_nocase: $wallet},` : ''} 
+              ${walletAddress ? `{emitter_contains: $wallet},` : ''} 
               ${sourceChainId ? `{ sourceChainId: $sourceChainId },` : ''} 
               ${targetChainId ? `{ toChainId: $targetChainId },` : ''}
               ${contract ? `{ contract: $contract }` : ''}
@@ -49,9 +49,9 @@ export class LightBridgeGraphQLService extends GraphQLService {
               depositId
               emitter
               amount
-              block_number
-              timestamp_
-              transactionHash_
+              blockNumber
+              blockTimestamp
+              transactionHash
             }
           }`)
 
@@ -65,24 +65,26 @@ export class LightBridgeGraphQLService extends GraphQLService {
             contract,
         }
 
-        return (
-            await this.conductQuery(
-                query,
-                variables,
-                sourceChainId,
-                EGraphQLService.LightBridge,
-                this.useLocal
-            )
-        )?.data?.assetReceiveds
+        return retainOldStructure(
+            (
+                await this.conductQuery(
+                    query,
+                    variables,
+                    sourceChainId,
+                    EGraphQLService.LightBridge,
+                    this.useLocal
+                )
+            )?.data?.assetReceiveds
+        );
     }
 
     async queryDisbursementSuccessEvent(
         walletAddress: string,
-        sourceChainId: number|string,
-        destChainId: number|string,
+        sourceChainId: number | string,
+        destChainId: number | string,
         token: string,
-        amount: number|string,
-        depositId: number|string
+        amount: number | string,
+        depositId: number | string
     ): Promise<LightBridgeDisbursementSuccessEvent | undefined> {
         if (!token) {
             return undefined
@@ -90,16 +92,16 @@ export class LightBridgeGraphQLService extends GraphQLService {
         const query =
             gql(`query Teleportation($wallet: String!, $sourceChainId: BigInt!, $token: String!, $amount: String!, $depositId: String!) {
   disbursementSuccesses(
-    where: { and: [{ to_contains_nocase: $wallet }, { sourceChainId: $sourceChainId }, { token_contains_nocase: $token }, { amount: $amount }, { depositId: $depositId }] }
+    where: { and: [{ to_contains: $wallet }, { sourceChainId: $sourceChainId }, { token_contains: $token }, { amount: $amount }, { depositId: $depositId }] }
   ) {
     depositId
     to
     token
     amount
     sourceChainId
-    block_number
-    timestamp_
-    transactionHash_
+    blockNumber
+    blockTimestamp
+    transactionHash
   }
 }
 `)
@@ -111,7 +113,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
             amount: amount.toString(),
             depositId: depositId.toString(),
         }
-        const events = (
+        const events = retainOldStructure((
             await this.conductQuery(
                 query,
                 variables,
@@ -119,7 +121,8 @@ export class LightBridgeGraphQLService extends GraphQLService {
                 EGraphQLService.LightBridge,
                 this.useLocal
             )
-        )?.data?.disbursementSuccesses
+        )?.data?.disbursementSuccesses)
+
         if (events?.length) {
             return events[0] // just first (should always just be one)
         }
@@ -128,23 +131,23 @@ export class LightBridgeGraphQLService extends GraphQLService {
 
     async queryDisbursementFailedEvent(
         walletAddress: string,
-        sourceChainId: number|string,
-        destChainId: number|string,
-        amount: number|string,
-        depositId: number|string
+        sourceChainId: number | string,
+        destChainId: number | string,
+        amount: number | string,
+        depositId: number | string
     ): Promise<LightBridgeDisbursementFailedEvent | undefined> {
         const query =
             gql(`query Teleportation($wallet: String!, $sourceChainId: BigInt!, $amount: String!, $depositId: String!) {
   disbursementFaileds(
-    where: { and: [{ to_contains_nocase: $wallet }, { sourceChainId: $sourceChainId }, { amount: $amount }, { depositId: $depositId }] }
+    where: { and: [{ to_contains: $wallet }, { sourceChainId: $sourceChainId }, { amount: $amount }, { depositId: $depositId }] }
   ) {
     depositId
     to
     amount
     sourceChainId
-    block_number
-    timestamp_
-    transactionHash_
+    blockNumber
+    blockTimestamp
+    transactionHash
   }
 }
 `)
@@ -155,7 +158,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
             amount: amount.toString(),
             depositId: depositId.toString(),
         }
-        const events = (
+        const events = retainOldStructure((
             await this.conductQuery(
                 query,
                 variables,
@@ -163,7 +166,8 @@ export class LightBridgeGraphQLService extends GraphQLService {
                 EGraphQLService.LightBridge,
                 this.useLocal
             )
-        )?.data?.disbursementFaileds
+        )?.data?.disbursementFaileds)
+
         if (events?.length) {
             if (events.length > 1) {
                 console.warn(
@@ -178,23 +182,23 @@ export class LightBridgeGraphQLService extends GraphQLService {
 
     async queryDisbursementRetrySuccessEvent(
         walletAddress: string,
-        sourceChainId: number|string,
-        destChainId: number|string,
-        amount: number|string,
-        depositId: number|string
+        sourceChainId: number | string,
+        destChainId: number | string,
+        amount: number | string,
+        depositId: number | string
     ): Promise<LightBridgeDisbursementRetrySuccessEvent | undefined> {
         const query =
             gql(`query Teleportation($wallet: String!, $sourceChainId: BigInt!, $amount: String!, $depositId: String!) {
   disbursementRetrySuccesses(
-    where: { and: [{ to_contains_nocase: $wallet }, { sourceChainId: $sourceChainId }, { amount: $amount }, { depositId: $depositId }] }
+    where: { and: [{ to_contains: $wallet }, { sourceChainId: $sourceChainId }, { amount: $amount }, { depositId: $depositId }] }
   ) {
     depositId
     to
     amount
     sourceChainId
-    block_number
-    timestamp_
-    transactionHash_
+    blockNumber
+    blockTimestamp
+    transactionHash
   }
 }
 `)
@@ -205,7 +209,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
             amount: amount.toString(),
             depositId: depositId.toString(),
         }
-        const events = (
+        const events = retainOldStructure((
             await this.conductQuery(
                 query,
                 variables,
@@ -213,7 +217,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
                 EGraphQLService.LightBridge,
                 this.useLocal
             )
-        )?.data?.disbursementRetrySuccesses
+        )?.data?.disbursementRetrySuccesses)
         if (events?.length) {
             return events[0] // just first (should always just be one)
         }
@@ -222,7 +226,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
 
     async querySupportedTokensBridge(
         currentNetworkId: BigNumberish,
-        destChainId: number|string
+        destChainId: number | string
     ): Promise<LightBridgeSupportedRouteEvents[]> {
         const query = gql(`
     query GetSupportedTokens($toChainId: BigInt!) {
@@ -230,13 +234,12 @@ export class LightBridgeGraphQLService extends GraphQLService {
         where: { 
           toChainId: $toChainId 
         },
-        order_by: { block_number: desc }
+        order_by: { blockNumber: desc }
       ) {
         id
-        block_number
-        timestamp_
-        transactionHash_
-        contractId_
+        blockNumber
+        blockTimestamp
+        transactionHash
         token
         toChainId
         supported
@@ -247,16 +250,17 @@ export class LightBridgeGraphQLService extends GraphQLService {
             toChainId: destChainId,
         }
 
-        return filterLatestGroupedSupportedTokens(
-            (
-                await this.conductQuery(
-                    query,
-                    variables,
-                    currentNetworkId,
-                    EGraphQLService.LightBridge,
-                    this.useLocal
-                )
-            )?.data?.tokenSupporteds
+        return filterLatestGroupedSupportedTokens(retainOldStructure(
+                (
+                    await this.conductQuery(
+                        query,
+                        variables,
+                        currentNetworkId,
+                        EGraphQLService.LightBridge,
+                        this.useLocal
+                    )
+                )?.data?.tokenSupporteds
+            )
         )
     }
 }

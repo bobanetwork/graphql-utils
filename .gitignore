@@ -2,6 +2,7 @@ node_modules
 build
 dist
 .idea
+.env
 
 /coverage/lcov-report
 /coverage/coverage-summary.json
