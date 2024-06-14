@@ -22,7 +22,6 @@ export class GraphQLService {
     private readonly baseUri = `https://gateway-arbitrum.network.thegraph.com/api/${this.apikey}/subgraphs/id`
 
     private withSubgraphId(subgraphId: string) {
-        console.log('key defined fpr ',  subgraphId, this.apikey);
         return `${this.baseUri}/${subgraphId}`
     }
 
