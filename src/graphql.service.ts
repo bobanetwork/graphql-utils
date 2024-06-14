@@ -17,10 +17,12 @@ if (!fetchLib) {
 }
 
 export class GraphQLService {
-    private readonly apikey = process.env.THE_GRAPH_API_KEY
+    private readonly apikey = process.env.THE_GRAPH_API_KEY ?? '815ddde7e44ffb91132567e2c4e7c558'
+
     private readonly baseUri = `https://gateway-arbitrum.network.thegraph.com/api/${this.apikey}/subgraphs/id`
 
     private withSubgraphId(subgraphId: string) {
+        console.log('key defined fpr ',  subgraphId, this.apikey);
         return `${this.baseUri}/${subgraphId}`
     }
 
@@ -66,7 +68,7 @@ export class GraphQLService {
         // Boba BNB
         56288: {
             [EGraphQLService.LightBridge]: {
-                gql: 'http://34.203.29.74:8000/subgraphs/name/boba-bnb-l2',
+                gql: 'https://graphql.bnb.boba.network/subgraphs/name/boba-bnb-l2/',
                 local: '',
             },
         },
@@ -87,7 +89,7 @@ export class GraphQLService {
         // Boba BNB testnet
         9728: {
             [EGraphQLService.LightBridge]: {
-                gql: 'http://34.203.29.74:8000/subgraphs/name/boba-bnb-l2-testnet',
+                gql: 'https://graphql.testnet.bnb.boba.network/subgraphs/name/boba-bnb-l2-testnet/',
                 local: 'http://127.0.0.1:8002/subgraphs/name/boba/Bridges',
             },
         },
