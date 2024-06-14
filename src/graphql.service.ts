@@ -7,8 +7,9 @@ import {
 } from '@apollo/client/core'
 import {BigNumberish} from 'ethers'
 import {EGraphQLService} from "./types";
+import { config } from 'dotenv';
 
-require('dotenv').config();
+config();
 
 let fetchLib = fetch
 if (!fetchLib) {
@@ -65,7 +66,7 @@ export class GraphQLService {
         // Boba BNB
         56288: {
             [EGraphQLService.LightBridge]: {
-                gql: 'http://34.203.29.74:8000/subgraphs/name/boba-bnb-l2/graphql',
+                gql: 'http://34.203.29.74:8000/subgraphs/name/boba-bnb-l2',
                 local: '',
             },
         },
@@ -86,7 +87,7 @@ export class GraphQLService {
         // Boba BNB testnet
         9728: {
             [EGraphQLService.LightBridge]: {
-                gql: 'http://34.203.29.74:8000/subgraphs/name/boba-bnb-l2-testnet/graphql\n',
+                gql: 'http://34.203.29.74:8000/subgraphs/name/boba-bnb-l2-testnet',
                 local: 'http://127.0.0.1:8002/subgraphs/name/boba/Bridges',
             },
         },

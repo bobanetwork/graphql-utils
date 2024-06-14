@@ -6,8 +6,8 @@ import {
     LightBridgeDisbursementSuccessEvent,
     LightBridgeSupportedRouteEvents
 } from "./types";
-import {gql} from "@apollo/client/core";
 import {BigNumberish} from "ethers";
+import {gql} from "@apollo/client/core";
 
 export class LightBridgeGraphQLService extends GraphQLService {
     useLocal = false
