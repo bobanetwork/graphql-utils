@@ -1,4 +1,4 @@
-const { defaults } = require('jest-config')
+import { defaults } from 'jest-config';
 
 /** @type {import('jest').Config} */
 const config = {
@@ -19,6 +19,6 @@ const config = {
     "text",
     "lcov"
   ]
-}
+};
 
-module.exports = config
+export default config;

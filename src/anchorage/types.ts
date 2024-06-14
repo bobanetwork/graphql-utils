@@ -32,6 +32,7 @@ export interface IHandleProveWithdrawalConfig {
 
 //#region events
 export type GQPWithdrawalInitiatedEvent = {
+    __typename: "WithdrawalInitiated"
     id: string
     to: string
     from: string
@@ -46,6 +47,7 @@ export type GQPWithdrawalInitiatedEvent = {
 }
 
 export type GQL2ToL1MessagePassedEvent = {
+    __typename: "MessagePassed"
     id: string
     block_number: string
     timestamp_: string
@@ -61,6 +63,7 @@ export type GQL2ToL1MessagePassedEvent = {
 }
 
 export type GQLWithdrawalFinalizedEvent = {
+    __typename: "WithdrawalFinalized"
     id: string
     block_number: string
     timestamp_: string
@@ -71,6 +74,7 @@ export type GQLWithdrawalFinalizedEvent = {
 }
 
 export type GQLWithdrawalProvenEvent = {
+    __typename: 'WithdrawalProven'
     id: string
     block_number: string
     timestamp_: string
