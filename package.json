@@ -4,7 +4,6 @@
   "description": "GraphQL services to be consumed by frontend/backend services.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "type": "module",
   "files": [
     "dist"
   ],
