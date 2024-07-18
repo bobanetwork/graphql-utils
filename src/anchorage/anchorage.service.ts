@@ -91,6 +91,7 @@ export class AnchorageGraphQLService extends GraphQLService {
             from
             contractId_
             timestamp_
+            timestamp_initiated: timestamp_
             transactionHash_
             block_number
             l1Token
