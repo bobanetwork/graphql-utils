@@ -91,6 +91,9 @@ export class GraphQLService {
                 gql: 'https://graphql.testnet.bnb.boba.network/subgraphs/name/boba-bnb-l2-testnet/',
                 local: 'http://127.0.0.1:8002/subgraphs/name/boba/Bridges',
             },
+            [EGraphQLService.AnchorageBridge]: {
+                gql: this.withSubgraphId('6vsAJ1PfspUwcYdi2vzjU17cJWmPbPmRwRevkaLtTxJD'),
+            },
         },
         // Arbitrum Sepolia
         421614: {
