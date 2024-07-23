@@ -8,6 +8,7 @@ describe('Anchorage: Integration Test', function () {
                 "0x3256bd6fc8b5fa48db95914d0df314465f3f7879",
                 288)
 
+        // console.log(res);
         expect(res[0].__typename).toEqual('WithdrawalInitiated')
         expect(res[0].transactionHash_).toBeDefined();
         expect(res[0].block_number).toBeDefined();

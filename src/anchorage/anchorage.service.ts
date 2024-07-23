@@ -82,6 +82,11 @@ export class AnchorageGraphQLService extends GraphQLService {
         l2ChainId: number | string
     ): Promise<GQPWithdrawalInitiatedEvent[]> {
         try {
+            // NOTE: The 'timestamp_initiated' key is crucial to prevent the overriding of the timestamp value
+            // when spreading the object. This allows us to accurately use it to verify the transaction initiation time on the gateway.
+            // TODO check if retrievable
+            // timestamp_
+            // timestamp_initiated: timestamp_
             const qry = gql`
         query GetWithdrawalInitiateds($address: String!) {
           withdrawalInitiateds(where: { from: $address }) {
@@ -90,6 +95,7 @@ export class AnchorageGraphQLService extends GraphQLService {
             from
             blockTimestamp
             transactionHash
+            timestamp_initiated: blockTimestamp
             blockNumber
             l1Token
             l2Token
@@ -333,7 +339,7 @@ export class AnchorageGraphQLService extends GraphQLService {
                         amount: event.amount || event.value,
                         token: event.l2Token,
                         originChainId: networkConfig.L2.chainId,
-                        timeStamp: block.timestamp,
+                        timeStamp: event.timestamp_initiated,
                     },
         }
     }
