@@ -123,10 +123,10 @@ export class GraphQLService {
         // Boba Sepolia
         28882: {
             [EGraphQLService.AnchorageBridge]: {
-                gql: this.withSubgraphId('7m4LZ832oV3wtb77cHiKwQG9hrxNM9iPSEHfNGJjR2Qg'),
+                gql: 'graphql.sepolia.boba.network/subgraphs/name/anchorage-bridging-sepolia/graphql',
             },
             [EGraphQLService.LightBridge]: {
-                gql: this.withSubgraphId('81QRKk7eEuakQHGmxi6p6GY6ruVnQhA4rBWKvbfnxdPQ'),
+                gql: 'graphql.sepolia.boba.network/subgraphs/name/light-bridge-boba-sepolia/graphql',
                 local: '',
             },
         },
