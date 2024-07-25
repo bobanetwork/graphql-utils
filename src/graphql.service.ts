@@ -70,6 +70,9 @@ export class GraphQLService {
                 gql: 'https://graphql.bnb.boba.network/subgraphs/name/boba-bnb-l2/',
                 local: '',
             },
+            [EGraphQLService.AnchorageBridge]: {
+                gql: 'https://graphql.bnb.boba.network/subgraphs/name/anchorage-bridging-boba-bnb',
+            },
         },
         // BSC
         56: {
@@ -77,12 +80,18 @@ export class GraphQLService {
                 gql: this.withSubgraphId('4Eoi62aX8V1DCebNX4mzPi7rfceFaRAeZ3xt7AYVowpy'),
                 local: '',
             },
+            [EGraphQLService.AnchorageBridge]: {
+                gql: this.withSubgraphId('Qmarruyi9KvU4nVaUdYSMLvW5hAvb8mPVf23PvGoQ6i3FU'),
+            },
         },
         // BNB testnet
         97: {
             [EGraphQLService.LightBridge]: {
                 gql: this.withSubgraphId('B8nR7fCE2KFV3oMJcLTDd56p7WQsoPH7wvBRRoqmocP8'),
                 local: '',
+            },
+            [EGraphQLService.AnchorageBridge]: {
+                gql: this.withSubgraphId('QmThKP9VzBY9qmV9AFdYEonNeakNQxx6XDCv3TgxB993qn'),
             },
         },
         // Boba BNB testnet
@@ -92,7 +101,7 @@ export class GraphQLService {
                 local: 'http://127.0.0.1:8002/subgraphs/name/boba/Bridges',
             },
             [EGraphQLService.AnchorageBridge]: {
-                gql: this.withSubgraphId('6vsAJ1PfspUwcYdi2vzjU17cJWmPbPmRwRevkaLtTxJD'),
+                gql: 'https://graphql.bnb.boba.network/subgraphs/name/anchorage-bridging-l2-testnet',
             },
         },
         // Arbitrum Sepolia
@@ -109,7 +118,6 @@ export class GraphQLService {
                 local: '',
             },
         },
-
         // Sepolia
         11155111: {
             [EGraphQLService.AnchorageBridge]: {
