@@ -101,7 +101,7 @@ export class GraphQLService {
                 local: 'http://127.0.0.1:8002/subgraphs/name/boba/Bridges',
             },
             [EGraphQLService.AnchorageBridge]: {
-                gql: 'https://graphql.bnb.boba.network/subgraphs/name/anchorage-bridging-l2-testnet',
+                gql: 'https://graphql.bnb.boba.network/subgraphs/name/anchorage-bridging-boba-bnb',
             },
         },
         // Arbitrum Sepolia
