@@ -91,7 +91,7 @@ export class GraphQLService {
                 local: '',
             },
             [EGraphQLService.AnchorageBridge]: {
-                gql: this.withSubgraphId('QmThKP9VzBY9qmV9AFdYEonNeakNQxx6XDCv3TgxB993qn'),
+                gql: this.withSubgraphId('DoXDPFXLPNyLmLuxRGXRhV2yUSiQGUxCVPt12iSZ32mM'),
             },
         },
         // Boba BNB testnet
