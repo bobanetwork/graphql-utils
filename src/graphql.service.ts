@@ -17,7 +17,7 @@ if (!fetchLib) {
 }
 
 export class GraphQLService {
-    private readonly apikey = process.env.THE_GRAPH_API_KEY ?? '815ddde7e44ffb91132567e2c4e7c558'
+    private readonly apikey = process.env.THE_GRAPH_API_KEY
 
     private readonly baseUri = `https://gateway-arbitrum.network.thegraph.com/api/${this.apikey}/subgraphs/id`
 
@@ -91,7 +91,7 @@ export class GraphQLService {
                 local: '',
             },
             [EGraphQLService.AnchorageBridge]: {
-                gql: this.withSubgraphId('DoXDPFXLPNyLmLuxRGXRhV2yUSiQGUxCVPt12iSZ32mM'),
+                gql: this.withSubgraphId('7bHCzdBfrkEHegRUwKJEkNG5moo6Yv6NmYdA9rQBCufy'),
             },
         },
         // Boba BNB testnet
