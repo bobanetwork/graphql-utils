@@ -124,9 +124,8 @@ export class GraphQLService {
                 gql: this.withSubgraphId('BmRWu64ZZQc7m6cBGqwfuZ4QBoBBZ2ijTbziR8PZ2tCv'),
                 local: '',
             },
-            /** @DEV needs signaling and publishing, this is a working testing environment */
             [EGraphQLService.DisputeGameFactory]: {
-                gql: 'https://api.studio.thegraph.com/proxy/78087/dispute-game-factory/v0.0.13'
+                gql: this.withSubgraphId('3ypGLssvTVBZzegJaK4kFmr8exE9ugG35Duzc1p3S1E4')
             }
         },
         // Boba Sepolia
