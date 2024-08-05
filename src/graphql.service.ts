@@ -19,10 +19,10 @@ if (!fetchLib) {
 export class GraphQLService {
     private readonly apikey = process.env.THE_GRAPH_API_KEY
 
-    private readonly baseUri = `https://gateway-arbitrum.network.thegraph.com/api/${this.apikey}/subgraphs/id`
+    private readonly uri = `https://gateway-arbitrum.network.thegraph.com/api/${this.apikey}/subgraphs/id`
 
     private withSubgraphId(subgraphId: string) {
-        return `${this.baseUri}/${subgraphId}`
+        return `${this.uri}/${subgraphId}`
     }
 
     GRAPHQL_ENDPOINTS = {
@@ -80,9 +80,6 @@ export class GraphQLService {
                 gql: this.withSubgraphId('4Eoi62aX8V1DCebNX4mzPi7rfceFaRAeZ3xt7AYVowpy'),
                 local: '',
             },
-            [EGraphQLService.AnchorageBridge]: {
-                gql: this.withSubgraphId('Qmarruyi9KvU4nVaUdYSMLvW5hAvb8mPVf23PvGoQ6i3FU'),
-            },
         },
         // BNB testnet
         97: {
@@ -127,27 +124,31 @@ export class GraphQLService {
                 gql: this.withSubgraphId('BmRWu64ZZQc7m6cBGqwfuZ4QBoBBZ2ijTbziR8PZ2tCv'),
                 local: '',
             },
+            /** @DEV needs signaling and publishing, this is a working testing environment */
+            [EGraphQLService.DisputeGameFactory]: {
+                gql: 'https://api.studio.thegraph.com/proxy/78087/dispute-game-factory/v0.0.13'
+            }
         },
         // Boba Sepolia
         28882: {
             [EGraphQLService.AnchorageBridge]: {
-                gql: 'graphql.sepolia.boba.network/subgraphs/name/anchorage-bridging-sepolia/graphql',
+                gql: 'https://graphql.sepolia.boba.network/subgraphs/name/anchorage-bridging-sepolia',
             },
             [EGraphQLService.LightBridge]: {
-                gql: 'graphql.sepolia.boba.network/subgraphs/name/light-bridge-boba-sepolia/graphql',
+                gql: 'https://graphql.sepolia.boba.network/subgraphs/name/light-bridge-boba-sepolia',
                 local: '',
             },
         },
         // local eth
         31337: {
             [EGraphQLService.LightBridge]: {
-                gql: 'http://graph-node_eth:8000/subgraphs/name/light-bridge',
+                local: 'http://graph-node_eth:8000/subgraphs/name/light-bridge',
             },
         },
         // local bnb
         31338: {
             [EGraphQLService.LightBridge]: {
-                gql: 'http://graph-node_bnb:8000/subgraphs/name/light-bridge',
+                local: 'http://graph-node_bnb:8000/subgraphs/name/light-bridge',
             },
         },
     }
