@@ -28,3 +28,5 @@ jobs:
         cache: 'npm'
     - run: npm i
     - run: npm test
+      env:
+        THE_GRAPH_API_KEY: ${{ secrets.THE_GRAPH_API_KEY }}
