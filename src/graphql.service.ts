@@ -7,9 +7,9 @@ import {
 } from '@apollo/client/core'
 import {BigNumberish} from 'ethers'
 import {EGraphQLService} from "./types";
-import { config } from 'dotenv';
+// import { config } from 'dotenv';
 
-config();
+// config();
 
 let fetchLib = fetch
 if (!fetchLib) {
@@ -17,7 +17,7 @@ if (!fetchLib) {
 }
 
 export class GraphQLService {
-    private readonly apikey = process.env.THE_GRAPH_API_KEY
+    private readonly apikey = process.env.REACT_APP_THE_GRAPH_API_KEY
 
     private readonly uri = `https://gateway-arbitrum.network.thegraph.com/api/${this.apikey}/subgraphs/id`
 
