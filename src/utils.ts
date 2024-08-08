@@ -31,3 +31,8 @@ export const retainOldStructure = (data: any[]) => {
         };
     });
 }
+
+export const FDGABI = [
+    {"type":"function","name":"l2BlockNumber","inputs":[],"outputs":[{"name":"l2BlockNumber_","type":"uint256","internalType":"uint256"}],"stateMutability":"pure"},
+    {"type":"function","name":"rootClaim","inputs":[],"outputs":[{"name":"rootClaim_","type":"bytes32","internalType":"Claim"}],"stateMutability":"pure"}
+]
