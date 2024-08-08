@@ -12,6 +12,7 @@ import {GraphQLService} from "../graphql.service";
 import {gql} from "@apollo/client/core";
 import { JsonRpcProvider } from '@ethersproject/providers'
 import {ethers} from "ethers";
+import {retainOldStructure} from "../utils";
 
 export class AnchorageGraphQLService extends GraphQLService {
     async findWithdrawalsProven(
@@ -23,26 +24,25 @@ export class AnchorageGraphQLService extends GraphQLService {
         query getWithdrawalProven($withdrawalHash: [String!]!) {
           withdrawalProvens(where: { withdrawalHash_in: $withdrawalHash }) {
             id
-            block_number
-            timestamp_
-            transactionHash_
-            contractId_
+            blockNumber
+            blockTimestamp
+            transactionHash
             from
             to
             withdrawalHash
           }
         }
       `
-            return (
+            return (retainOldStructure((
                 await this.conductQuery(
                     qry,
                     { withdrawalHash: withdrawalHashes },
                     l1ChainId,
                     EGraphQLService.AnchorageBridge
                 )
-            )?.data.withdrawalProvens
+            )?.data.withdrawalProvens))
         } catch (e) {
-            console.log('Error while fetching: PROVEN')
+            console.log('Error while fetching: PROVEN: ', e);
             return []
         }
     }
@@ -56,23 +56,22 @@ export class AnchorageGraphQLService extends GraphQLService {
         query getWithdrawalsFinalized($withdrawalHash: [String!]!) {
           withdrawalFinalizeds(where: { withdrawalHash_in: $withdrawalHash }) {
             id
-            block_number
-            timestamp_
-            transactionHash_
-            contractId_
+            blockNumber
+            blockTimestamp
+            transactionHash
             withdrawalHash
             success
           }
         }
       `
-            return (
+            return retainOldStructure((
                 await this.conductQuery(
                     graphqlQuery,
                     { withdrawalHash: withdrawalHashes },
                     l1ChainId,
                     EGraphQLService.AnchorageBridge
                 )
-            )?.data.withdrawalFinalizeds
+            )?.data.withdrawalFinalizeds)
         } catch (e) {
             return []
         }
@@ -83,20 +82,21 @@ export class AnchorageGraphQLService extends GraphQLService {
         l2ChainId: number | string
     ): Promise<GQPWithdrawalInitiatedEvent[]> {
         try {
-            // NOTE: The 'timestamp_initiated' key is crucial to prevent the overriding of the timestamp value 
+            // NOTE: The 'timestamp_initiated' key is crucial to prevent the overriding of the timestamp value
             // when spreading the object. This allows us to accurately use it to verify the transaction initiation time on the gateway.
-
+            // TODO check if retrievable
+            // timestamp_
+            // timestamp_initiated: timestamp_
             const qry = gql`
         query GetWithdrawalInitiateds($address: String!) {
           withdrawalInitiateds(where: { from: $address }) {
             id
             to
             from
-            contractId_
-            timestamp_
-            timestamp_initiated: timestamp_
-            transactionHash_
-            block_number
+            blockTimestamp
+            transactionHash
+            timestamp_initiated: blockTimestamp
+            blockNumber
             l1Token
             l2Token
             amount
@@ -104,14 +104,14 @@ export class AnchorageGraphQLService extends GraphQLService {
           }
         }
       `
-            return (
+            return retainOldStructure((
                 await this.conductQuery(
                     qry,
                     { address: address.toLowerCase() },
                     l2ChainId,
                     EGraphQLService.AnchorageBridge
                 )
-            )?.data.withdrawalInitiateds
+            )?.data.withdrawalInitiateds)
         } catch (e) {
             return []
         }
@@ -120,17 +120,15 @@ export class AnchorageGraphQLService extends GraphQLService {
     async findWithdrawalMessagedPassed(
         withdrawalHash: string,
         l2ChainId: string | number
-
     ): Promise<GQL2ToL1MessagePassedEvent[]> {
         try {
             const qry = gql`
         query GetWithdrawalInitiateds($withdrawalHash: String!) {
           messagePasseds(where: { withdrawalHash: $withdrawalHash }) {
             id
-            block_number
-            timestamp_
-            transactionHash_
-            contractId_
+            blockNumber
+            blockTimestamp
+            transactionHash
             nonce
             sender
             target
@@ -141,7 +139,7 @@ export class AnchorageGraphQLService extends GraphQLService {
           }
         }
       `
-            return (
+            return retainOldStructure((
                 await this.conductQuery(
                     qry,
                     {
@@ -150,7 +148,7 @@ export class AnchorageGraphQLService extends GraphQLService {
                     l2ChainId,
                     EGraphQLService.AnchorageBridge
                 )
-            )?.data.messagePasseds
+            )?.data.messagePasseds)
         } catch (e) {
             return []
         }
@@ -163,12 +161,11 @@ export class AnchorageGraphQLService extends GraphQLService {
         try {
             const qry = gql`
         query getMessagePasseds($blockNumbers: [String!]!) {
-          messagePasseds(where: { block_number_in: $blockNumbers }) {
+          messagePasseds(where: { blockNumber_in: $blockNumbers }) {
             id
-            block_number
-            timestamp_
-            transactionHash_
-            contractId_
+            blockNumber
+            blockTimestamp
+            transactionHash
             nonce
             sender
             target
@@ -179,14 +176,14 @@ export class AnchorageGraphQLService extends GraphQLService {
           }
         }
       `
-            return (
+            return retainOldStructure((
                 await this.conductQuery(
                     qry,
                     { blockNumbers },
                     chainId,
                     EGraphQLService.AnchorageBridge
                 )
-            )?.data.messagePasseds
+            )?.data.messagePasseds)
         } catch (e) {
             return []
         }
@@ -204,10 +201,9 @@ export class AnchorageGraphQLService extends GraphQLService {
             id
             to
             from
-            contractId_
-            timestamp_
-            transactionHash_
-            block_number
+            blockTimestamp
+            transactionHash
+            blockNumber
             l1Token
             l2Token
             amount
@@ -215,7 +211,7 @@ export class AnchorageGraphQLService extends GraphQLService {
           }
         }
       `
-            const depositsFinalized: GQLDepositFinalizedEvent[] = (
+            const depositsFinalized: GQLDepositFinalizedEvent[] = retainOldStructure((
                 await this.conductQuery(
                     graphqlQuery,
                     {
@@ -224,7 +220,7 @@ export class AnchorageGraphQLService extends GraphQLService {
                     networkConfig.L2.chainId,
                     EGraphQLService.AnchorageBridge
                 )
-            )?.data.depositFinalizeds
+            )?.data.depositFinalizeds)
 
             return Promise.all(
                 depositsFinalized.map((event) => {
@@ -421,18 +417,6 @@ export class AnchorageGraphQLService extends GraphQLService {
         }
 
         return withdrawalTransactions
-    }
-
-    findWithdrawHashesFromLogs(
-        bridgeLogsArr: GQPWithdrawalInitiatedEvent[],
-        l2tol1Logs: GQL2ToL1MessagePassedEvent[]
-    ) {
-        const transactionHashSet = new Set(
-            bridgeLogsArr.map((obj) => obj.transactionHash_)
-        )
-        return l2tol1Logs.filter((obj) =>
-            transactionHashSet.has(obj.transactionHash_)
-        )
     }
 }
 
