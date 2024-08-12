@@ -18,45 +18,32 @@ describe('Anchorage: Integration Test', function () {
 
     it('Submitted Block reachable on: Sepolia', async () => {
         const chainId = 11155111;
-        const latestBlockNumber = await anchorageGraphQLService.getLatestFDGSubmittedBlock(chainId);
-        const latestSubmission = await anchorageGraphQLService.getFDGSubmissions(chainId);
-        expect(latestSubmission.length).toEqual(1);
-        expect(latestSubmission[0].l2BlockNumber).toEqual(latestBlockNumber)
-
-        const submissions = await anchorageGraphQLService.getFDGSubmissions(chainId, latestSubmission[0].index, 5);
-        expect(submissions.length).toEqual(5);
-        expect(submissions[0].l2BlockNumber).toEqual(latestBlockNumber);
-        expect(submissions[0].l2BlockNumber).toBeGreaterThan(submissions[1].l2BlockNumber);
-        expect(submissions[0].index).toEqual(submissions[1].index + 1);
-
-        const prevSubmissions = await anchorageGraphQLService.getFDGSubmissions(chainId, submissions[4].index, 5);
-        expect(prevSubmissions.length).toEqual(5);
-        expect(prevSubmissions[0].l2BlockNumber).toEqual(submissions[4].l2BlockNumber);
-        expect(prevSubmissions[0].index).toEqual(submissions[4].index);
+        const latestL2BlockNumber = await anchorageGraphQLService.getLatestFDGSubmittedBlock(chainId);
+        expect(latestL2BlockNumber).toBeGreaterThan(0)
     });
 
     it('Get root claim from submissions', async () => {
         const chainId = 11155111;
+        const testingL2BlockNumber = 8790790;
 
-        const latestSubmissions = await anchorageGraphQLService.getFDGSubmissions(chainId, null, 20);
-        const FDGAddress = latestSubmissions[4].id;
-        const rpcEndpoint = anchorageGraphQLService.getRpcEndpoint(Number(chainId));
-        const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint);
-        const FDGContract = new ethers.Contract(FDGAddress, FDGABI, provider);
-        const l2BlockNumber = (await FDGContract.l2BlockNumber()).toNumber();
+        const case1 = await anchorageGraphQLService.getRootClaimOfFDGSubmission(chainId, testingL2BlockNumber);
+        expect(case1.status).toEqual("success");
+        expect(case1.id.toLowerCase()).toEqual(("0x83Ef33E9Ada93ef0040c8C550195fB1018128c9d").toLowerCase());
+        expect(case1.l2BlockNumber).toEqual(8790794);
+        expect(case1.rootClaim.toLowerCase()).toEqual("0xce9110ddcada4c1df37bcdf398d048f0af92da59eee205c506726264e5aeecd3");
+        expect(case1.index).toEqual(596);
 
-        const testingL2BlockNumber = l2BlockNumber - 10;
+        const testingL2BlockNumber2 = 8790794;
+        const case2 = await anchorageGraphQLService.getRootClaimOfFDGSubmission(chainId, testingL2BlockNumber2);
+        expect(case2.status).toEqual("success");
+        expect(case2.id.toLowerCase()).toEqual(("0x83Ef33E9Ada93ef0040c8C550195fB1018128c9d").toLowerCase());
+        expect(case2.l2BlockNumber).toEqual(8790794);
+        expect(case2.rootClaim.toLowerCase()).toEqual("0xce9110ddcada4c1df37bcdf398d048f0af92da59eee205c506726264e5aeecd3");
+        expect(case2.index).toEqual(596);
 
-        const submission = await anchorageGraphQLService.getRootClaimOfFDGSubmission(chainId, testingL2BlockNumber);
-        expect(submission.status).toEqual("success");
-        expect(submission.rootClaim).toEqual(latestSubmissions[4].rootClaim);
-        expect (submission.l2BlockNumber).toEqual(latestSubmissions[4].l2BlockNumber);
-        expect(submission.index).toEqual(latestSubmissions[4].index);
-
-        const submission2 = await anchorageGraphQLService.getRootClaimOfFDGSubmission(chainId, l2BlockNumber);
-        expect(submission2.status).toEqual("success");
-        expect(submission2.rootClaim).toEqual(latestSubmissions[4].rootClaim);
-        expect (submission2.l2BlockNumber).toEqual(latestSubmissions[4].l2BlockNumber);
-        expect(submission2.index).toEqual(latestSubmissions[4].index);
-    })
+        const latestL2BlockNumber = await anchorageGraphQLService.getLatestFDGSubmittedBlock(chainId);
+        const case3 = await anchorageGraphQLService.getRootClaimOfFDGSubmission(chainId, latestL2BlockNumber + 10);
+        expect(case3.status).toEqual("error");
+        expect(case3.error).toEqual("No submission found for the given block number");
+    });
 });

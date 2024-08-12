@@ -419,22 +419,24 @@ export class AnchorageGraphQLService extends GraphQLService {
         return withdrawalTransactions
     }
 
-    async getFDGSubmissions(chainId: string | number, index: null | number = null, first: number = 1) {
+    // Fraud proofing specific functions
+    // If the block number is not found, return 0
+    async getLatestFDGSubmittedBlock(
+        chainId: string | number
+    ) {
         try {
-            const whereClause = index !== null
-                ? `{ resolvedStatus: 2, index_lte: ${index} }`
-                : `{ resolvedStatus: 2 }`;
             const qry = gql`
                 query GetDisputeGameCreateds {
                     disputeGameCreateds(
                         orderBy: index,
                         orderDirection: desc,
-                        first: ${first},
-                        where: ${whereClause}
+                        first: 1,
+                        where: { resolvedStatus: 2 }
                     ) {
                         id
                         index
                         rootClaim
+                        l2BlockNumber
                     }
                 }
             `
@@ -444,39 +446,10 @@ export class AnchorageGraphQLService extends GraphQLService {
                 chainId,
                 EGraphQLService.DisputeGameFactory
             )
-            const submissions = []
-            const rpcEndpoint = this.getRpcEndpoint(Number(chainId))
-            const provider = new JsonRpcProvider(rpcEndpoint)
             if (result?.data?.disputeGameCreateds?.length) {
-                for (const submission of result.data.disputeGameCreateds) {
-                    const FDGAddress = submission.id
-                    const FDGContract = new ethers.Contract(FDGAddress, FDGABI, provider)
-                    const l2BlockNumber = await FDGContract.l2BlockNumber()
-                    submissions.push({
-                        id: FDGAddress,
-                        index: Number(submission.index),
-                        l2BlockNumber: l2BlockNumber.toNumber(),
-                        rootClaim: submission.rootClaim,
-                    })
-                }
-                return submissions
+                return Number(result.data.disputeGameCreateds[0].l2BlockNumber)
             }
-            console.log('graph-utils: getFDGSubmitted: No FDG found')
-            return [{ index: 0, l2BlockNumber: 0, rootClaim: '0x', id: ethers.constants.AddressZero }]
-        } catch (e) {
-            console.log('graph-utils: getFDGSubmitted: Error', e)
-            return [{ index: 0, l2BlockNumber: 0, rootClaim: '0x', id: ethers.constants.AddressZero }]
-        }
-    }
-
-    // Fraud proofing specific functions
-    // If the block number is not found, return 0
-    async getLatestFDGSubmittedBlock(
-        chainId: string | number
-    ) {
-        try {
-            const result = await this.getFDGSubmissions(chainId)
-            return result[0].l2BlockNumber
+            return 0
         } catch (e) {
             console.log('graph-utils: getLatestFDGSubmittedBlock: Error', e)
             return 0
@@ -488,72 +461,41 @@ export class AnchorageGraphQLService extends GraphQLService {
         blockNumber: number
     ) {
         try {
-            // get latest FDG submission
-            const latestFDGSubmission = await this.getFDGSubmissions(chainId)
-            const latestSubmittedIndex = latestFDGSubmission[0].index
-            const latestSubmittedBlockNumber = latestFDGSubmission[0].l2BlockNumber
-
-            // get first FDG submission
-            const firstFDGSubmission = await this.getFDGSubmissions(chainId, 0)
-            const firstSubmittedBlockNumber = firstFDGSubmission[0].l2BlockNumber
-
-            // Neeeds double check
-            // You need to resubmit the proof if the block number is less than the first submission
-            // Or you can claim the reward directly
-            if (blockNumber < firstSubmittedBlockNumber) {
-                return {
-                    status: 'failure',
-                    error: 'Less than first submission'
-                }
-            }
-            if (blockNumber > latestSubmittedBlockNumber) {
-                return {
-                    status: 'failure',
-                    error: 'Greater than latest submission',
-                }
-            }
-
-            const step = 10
-            let prevSubmittedIndex = latestSubmittedIndex
-            let prevSubmittedBlockNumber = latestSubmittedBlockNumber
-            let prevRootClaim = latestFDGSubmission[0].rootClaim
-            while (prevSubmittedBlockNumber > blockNumber) {
-                const prevFDGSubmissions = await this.getFDGSubmissions(chainId, prevSubmittedIndex, step)
-                for (const prevFDGSubmission of prevFDGSubmissions) {
-                    if (prevFDGSubmission.l2BlockNumber < blockNumber) {
-                        return {
-                            status: 'success',
-                            index: prevSubmittedIndex,
-                            rootClaim: prevRootClaim,
-                            l2BlockNumber: prevSubmittedBlockNumber,
-                        }
+            const qry = gql`
+                query GetDisputeGameCreateds {
+                    disputeGameCreateds(
+                        orderBy: index,
+                        orderDirection: asc,
+                        first: 1,
+                        where: { resolvedStatus: 2, l2BlockNumber_gte: ${blockNumber} }
+                    ) {
+                        id
+                        index
+                        rootClaim
+                        l2BlockNumber
                     }
-                    // special case
-                    if (prevFDGSubmission.l2BlockNumber === blockNumber) {
-                        return {
-                            status: 'success',
-                            index: prevFDGSubmission.index,
-                            rootClaim: prevFDGSubmission.rootClaim,
-                            l2BlockNumber: prevFDGSubmission.l2BlockNumber,
-                        }
-                    }
-                    prevSubmittedIndex = prevFDGSubmission.index
-                    prevSubmittedBlockNumber = prevFDGSubmission.l2BlockNumber
-                    prevRootClaim = prevFDGSubmission.rootClaim
                 }
-            }
-
-            console.log('graph-utils: getStateRootOfFDGSubmission: Cannot find the root claim')
-            return {
-                status: 'failure',
-                error: 'Unknown error - cannot find the root claim',
+            `
+            const result = await this.conductQuery(
+                qry,
+                undefined,
+                chainId,
+                EGraphQLService.DisputeGameFactory
+            )
+            if (result?.data?.disputeGameCreateds?.length) {
+                return {
+                    status: 'success',
+                    id: result.data.disputeGameCreateds[0].id,
+                    rootClaim: result.data.disputeGameCreateds[0].rootClaim,
+                    l2BlockNumber: Number(result.data.disputeGameCreateds[0].l2BlockNumber),
+                    index: Number(result.data.disputeGameCreateds[0].index),
+                }
+            } else {
+                return { status: 'error', error: 'No submission found for the given block number' }
             }
         } catch (e) {
             console.log('graph-utils: getStateRootOfFDGSubmission: Error', e)
-            return {
-                status: 'failure',
-                error: 'Unknown error',
-            }
+            return { status: 'error', error: 'Unknown reason' }
         }
     }
 }
