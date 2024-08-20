@@ -18,7 +18,8 @@ const config = {
     "json-summary",
     "text",
     "lcov"
-  ]
+  ],
+  testTimeout: 60000,
 };
 
 export default config;

@@ -12,7 +12,7 @@ import {GraphQLService} from "../graphql.service";
 import {gql} from "@apollo/client/core";
 import { JsonRpcProvider } from '@ethersproject/providers'
 import {ethers} from "ethers";
-import {retainOldStructure} from "../utils";
+import {retainOldStructure, FDGABI } from "../utils";
 
 export class AnchorageGraphQLService extends GraphQLService {
     async findWithdrawalsProven(
@@ -340,6 +340,7 @@ export class AnchorageGraphQLService extends GraphQLService {
                         token: event.l2Token,
                         originChainId: networkConfig.L2.chainId,
                         timeStamp: event.timestamp_initiated,
+                        timeStamp_proven: event.timestamp_
                     },
         }
     }
@@ -417,6 +418,86 @@ export class AnchorageGraphQLService extends GraphQLService {
         }
 
         return withdrawalTransactions
+    }
+
+    // Fraud proofing specific functions
+    // If the block number is not found, return 0
+    async getLatestFDGSubmittedBlock(
+        chainId: string | number
+    ) {
+        try {
+            const qry = gql`
+                query GetDisputeGameCreateds {
+                    disputeGameCreateds(
+                        orderBy: index,
+                        orderDirection: desc,
+                        first: 1,
+                        where: { resolvedStatus: 2 }
+                    ) {
+                        id
+                        index
+                        rootClaim
+                        l2BlockNumber
+                    }
+                }
+            `
+            const result = await this.conductQuery(
+                qry,
+                undefined,
+                chainId,
+                EGraphQLService.DisputeGameFactory
+            )
+            if (result?.data?.disputeGameCreateds?.length) {
+                return Number(result.data.disputeGameCreateds[0].l2BlockNumber)
+            }
+            return 0
+        } catch (e) {
+            console.log('graph-utils: getLatestFDGSubmittedBlock: Error', e)
+            return 0
+        }
+    }
+
+    async getRootClaimOfFDGSubmission(
+        chainId: string | number,
+        blockNumber: number
+    ) {
+        try {
+            const qry = gql`
+                query GetDisputeGameCreateds {
+                    disputeGameCreateds(
+                        orderBy: index,
+                        orderDirection: asc,
+                        first: 1,
+                        where: { resolvedStatus: 2, l2BlockNumber_gte: ${blockNumber} }
+                    ) {
+                        id
+                        index
+                        rootClaim
+                        l2BlockNumber
+                    }
+                }
+            `
+            const result = await this.conductQuery(
+                qry,
+                undefined,
+                chainId,
+                EGraphQLService.DisputeGameFactory
+            )
+            if (result?.data?.disputeGameCreateds?.length) {
+                return {
+                    status: 'success',
+                    id: result.data.disputeGameCreateds[0].id,
+                    rootClaim: result.data.disputeGameCreateds[0].rootClaim,
+                    l2BlockNumber: Number(result.data.disputeGameCreateds[0].l2BlockNumber),
+                    index: Number(result.data.disputeGameCreateds[0].index),
+                }
+            } else {
+                return { status: 'error', error: 'No submission found for the given block number' }
+            }
+        } catch (e) {
+            console.log('graph-utils: getStateRootOfFDGSubmission: Error', e)
+            return { status: 'error', error: 'Unknown reason' }
+        }
     }
 }
 

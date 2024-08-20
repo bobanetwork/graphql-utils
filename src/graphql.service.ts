@@ -125,7 +125,7 @@ export class GraphQLService {
                 local: '',
             },
             [EGraphQLService.DisputeGameFactory]: {
-                gql: this.withSubgraphId('3ypGLssvTVBZzegJaK4kFmr8exE9ugG35Duzc1p3S1E4')
+                gql: this.withSubgraphId('366aAux7wdCaJDZCqFRYQCAu9EcsvKn1KEMFMmAcVGb4')
             }
         },
         // Boba Sepolia
@@ -150,6 +150,20 @@ export class GraphQLService {
                 local: 'http://graph-node_bnb:8000/subgraphs/name/light-bridge',
             },
         },
+    }
+
+    RPC_ENDPOINTS = {
+        // Sepolia
+        11155111: {
+            url: 'https://ethereum-sepolia.publicnode.com/',
+        },
+    }
+
+    getRpcEndpoint(chainId: number) {
+        if (!this.RPC_ENDPOINTS[chainId]) {
+            throw new Error("No RPC endpoint for network: " + chainId)
+        }
+        return this.RPC_ENDPOINTS[chainId]
     }
 
     getBridgeEndpoint = (chainId, service: EGraphQLService, useLocal = false) => {
