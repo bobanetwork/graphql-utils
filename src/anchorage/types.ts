@@ -27,6 +27,7 @@ export interface IHandleProveWithdrawalConfig {
     withdrawalHash?: string
     blockHash?: string
     timeStamp?: number
+    timeStamp_proven?: number
 }
 //#endregion
 
