@@ -117,6 +117,56 @@ export class AnchorageGraphQLService extends GraphQLService {
         }
     }
 
+    async findWithdrawalsInitiatedBnb(
+        address: string,
+        l2ChainId: number | string
+    ): Promise<GQPWithdrawalInitiatedEvent[]> {
+        try {
+            const qry = gql`
+            query GetWithdrawalInitiateds($address: String!) {
+                ethbridgeInitiateds(where: { from: $address }) {
+                    id
+                    from 
+                    to
+                    amount
+                    blockTimestamp
+                    timestamp_initiated: blockTimestamp
+                    blockNumber
+                }
+                erc20BridgeInitiateds(where: { from: $address }) {
+                    id
+                    from
+                    to
+                    amount
+                    localToken
+                    l2Token: localToken
+                    remoteToken
+                    blockNumber
+                    blockTimestamp
+                    timestamp_initiated: blockTimestamp
+                }  
+            
+            }
+      `
+
+            const data = (
+                await this.conductQuery(
+                    qry,
+                    { address: address.toLowerCase() },
+                    l2ChainId,
+                    EGraphQLService.AnchorageBridge
+                )
+            )?.data;
+
+            return retainOldStructure([...data.ethbridgeInitiateds.map(c => ({
+                ...c,
+                l2Token: '0x4200000000000000000000000000000000000006' // default eth token BOBA for bnb
+            })), ...data.erc20BridgeInitiateds]);
+        } catch (e) {
+            return []
+        }
+    }
+
     async findWithdrawalMessagedPassed(
         withdrawalHash: string,
         l2ChainId: string | number
@@ -189,6 +239,42 @@ export class AnchorageGraphQLService extends GraphQLService {
         }
     }
 
+    async findWithdrawalMessagesPassedPlain(
+        chainId: string | number,
+        address: string
+    ): Promise<GQL2ToL1MessagePassedEvent[]> {
+        try {
+            const qry = gql`
+        query getMessagePasseds($address: String!) {
+            messagePasseds(where: {target: $address}) {
+                id
+                blockNumber
+                blockTimestamp
+                transactionHash
+                nonce
+                sender
+                target
+                value
+                gasLimit
+                data
+                withdrawalHash
+            }
+        }
+      `
+            return retainOldStructure((
+                await this.conductQuery(
+                    qry,
+                    { address },
+                    chainId,
+                    EGraphQLService.AnchorageBridge
+                )
+            )?.data.messagePasseds);
+
+        } catch (e) {
+            return []
+        }
+    }
+
     async queryDepositTransactions(
         provider: JsonRpcProvider | undefined,
         address: string,
@@ -247,7 +333,7 @@ export class AnchorageGraphQLService extends GraphQLService {
             return token !== '0x0000000000000000000000000000000000000000'
         }
         const transaction = await provider!.getTransaction(event.transactionHash_)
-        const block = await provider!.getBlock(transaction.blockHash)
+        const block = await provider!.getBlock(transaction?.blockHash)
 
         return {
             timeStamp: block.timestamp,
@@ -349,14 +435,26 @@ export class AnchorageGraphQLService extends GraphQLService {
         l1Provider,
         l2Provider,
         address,
-        networkConfig: MinimalNetworkConfig
+        networkConfig: MinimalNetworkConfig,
+        isActiveNetworkBnb
     ) {
         const l1ChainId = networkConfig.L1.chainId;
         const l2ChainId = networkConfig.L2.chainId;
-        const withdrawalsInitiated = await this.findWithdrawalsInitiated(address, l2ChainId)
-        const messagesPassed = await this.findWithdrawalMessagesPassed(
-            withdrawalsInitiated.map((wI) => wI.block_number), l2ChainId
-        )
+        let withdrawalsInitiated = [];
+        if (isActiveNetworkBnb) {
+            withdrawalsInitiated = await this.findWithdrawalsInitiatedBnb(address, l2ChainId)
+        } else {
+            withdrawalsInitiated = await this.findWithdrawalsInitiated(address, l2ChainId)
+        }
+        //TODO: updated function below to use address of sender instead of block number. with check.
+        let messagesPassed;
+        if (isActiveNetworkBnb) {
+            messagesPassed = await this.findWithdrawalMessagesPassedPlain(l2ChainId, address)
+        } else {
+            messagesPassed = await this.findWithdrawalMessagesPassed(withdrawalsInitiated.map((wI) => wI.block_number), l2ChainId)
+        }
+
+
         const withdrawalHashes = messagesPassed.map((mP) => mP.withdrawalHash)
         const provenWithdrawals = await this.findWithdrawalsProven(withdrawalHashes, l1ChainId)
         const finalizedWithdrawals =
@@ -371,13 +469,18 @@ export class AnchorageGraphQLService extends GraphQLService {
             const messagePayload = messagesPassed.find(
                 (m) => m.withdrawalHash === withdrawalHashCandidate
             )
-            const withdrawPayload = withdrawalsInitiated.find(
-                (w) => w.block_number === messagePayload?.block_number
-            )
-
-            const eventPayload = {
-                ...messagePayload,
-                ...withdrawPayload,
+            //TODO: only execute this for eth not for bnb.
+            let eventPayload = {
+                ...messagePayload
+            }
+            if (isActiveNetworkBnb) { 
+                const withdrawPayload = withdrawalsInitiated.find(
+                    (w) => w.block_number === messagePayload?.block_number
+                )
+                eventPayload = {
+                    ...eventPayload,
+                    ...withdrawPayload,
+                }
             }
             if (!!provenEvent) {
                 const finalizedEvent = finalizedWithdrawals.find(
@@ -416,7 +519,7 @@ export class AnchorageGraphQLService extends GraphQLService {
                 )
             }
         }
-
+        console.log(`withdrawalTransactions`, withdrawalTransactions)
         return withdrawalTransactions
     }
 
@@ -746,13 +849,14 @@ export const claimWithdrawal = async (networkService: MinimalNetworkService, log
 }
 
 export const checkBridgeWithdrawalReenter =
-    async (networkService: MinimalNetworkService): Promise<IReenterWithdrawConfig | null> => {
+    async (networkService: MinimalNetworkService, isActiveNetworkBnb): Promise<IReenterWithdrawConfig | null> => {
         return anchorageGraphQLService
             .queryWithdrawalTransactionsHistory(
                 networkService.L1Provider,
                 networkService.L2Provider,
                 networkService.account,
-                networkService.networkConfig!
+                networkService.networkConfig!,
+                isActiveNetworkBnb
             )
             .then((events: any) => {
                 // we should skip all finalized events and only send the latest on bridge.
