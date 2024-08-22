@@ -141,6 +141,7 @@ export class AnchorageGraphQLService extends GraphQLService {
                     localToken
                     l2Token: localToken
                     remoteToken
+                    transactionHash
                     blockNumber
                     blockTimestamp
                     timestamp_initiated: blockTimestamp
@@ -234,42 +235,6 @@ export class AnchorageGraphQLService extends GraphQLService {
                     EGraphQLService.AnchorageBridge
                 )
             )?.data.messagePasseds)
-        } catch (e) {
-            return []
-        }
-    }
-
-    async findWithdrawalMessagesPassedPlain(
-        chainId: string | number,
-        address: string
-    ): Promise<GQL2ToL1MessagePassedEvent[]> {
-        try {
-            const qry = gql`
-        query getMessagePasseds($address: String!) {
-            messagePasseds(where: {target: $address}) {
-                id
-                blockNumber
-                blockTimestamp
-                transactionHash
-                nonce
-                sender
-                target
-                value
-                gasLimit
-                data
-                withdrawalHash
-            }
-        }
-      `
-            return retainOldStructure((
-                await this.conductQuery(
-                    qry,
-                    { address },
-                    chainId,
-                    EGraphQLService.AnchorageBridge
-                )
-            )?.data.messagePasseds);
-
         } catch (e) {
             return []
         }
@@ -376,9 +341,15 @@ export class AnchorageGraphQLService extends GraphQLService {
     ) {
         const provider =
             status !== WithdrawState.initialized ? l1Provider : l2Provider
-
+        console.log(`trx transactionHash_`, event.transactionHash_)
         const transaction = await provider!.getTransaction(event.transactionHash_)
-        const block = await provider!.getBlock(transaction.blockNumber)
+        const block = await provider!.getBlock(transaction?.blockNumber)
+
+        console.log({
+            transactionHash: event.transactionHash_,
+            transaction,
+            block
+        })
 
         return {
             timeStamp: block.timestamp,
@@ -446,19 +417,15 @@ export class AnchorageGraphQLService extends GraphQLService {
         } else {
             withdrawalsInitiated = await this.findWithdrawalsInitiated(address, l2ChainId)
         }
-        //TODO: updated function below to use address of sender instead of block number. with check.
-        let messagesPassed;
-        if (isActiveNetworkBnb) {
-            messagesPassed = await this.findWithdrawalMessagesPassedPlain(l2ChainId, address)
-        } else {
-            messagesPassed = await this.findWithdrawalMessagesPassed(withdrawalsInitiated.map((wI) => wI.block_number), l2ChainId)
-        }
 
-
+        const messagesPassed = await this.findWithdrawalMessagesPassed(withdrawalsInitiated.map((wI) => wI.block_number), l2ChainId)
+        console.log(`messagesPassed`, messagesPassed.map((wI) => wI.transactionHash_))
         const withdrawalHashes = messagesPassed.map((mP) => mP.withdrawalHash)
         const provenWithdrawals = await this.findWithdrawalsProven(withdrawalHashes, l1ChainId)
+        console.log(`provenWithdrawals`, provenWithdrawals)
         const finalizedWithdrawals =
             await this.findWithdrawalsFinalized(withdrawalHashes, l1ChainId)
+        console.log(`finalizedWithdrawals`, finalizedWithdrawals)
 
         const withdrawalTransactions: any[] = []
         for (const withdrawalHashCandidate of withdrawalHashes) {
@@ -470,18 +437,14 @@ export class AnchorageGraphQLService extends GraphQLService {
                 (m) => m.withdrawalHash === withdrawalHashCandidate
             )
             //TODO: only execute this for eth not for bnb.
-            let eventPayload = {
-                ...messagePayload
+            const withdrawPayload = withdrawalsInitiated.find(
+                (w) => w.block_number === messagePayload?.block_number
+            )
+            const eventPayload = {
+                ...withdrawPayload,
+                ...messagePayload,
             }
-            if (isActiveNetworkBnb) { 
-                const withdrawPayload = withdrawalsInitiated.find(
-                    (w) => w.block_number === messagePayload?.block_number
-                )
-                eventPayload = {
-                    ...eventPayload,
-                    ...withdrawPayload,
-                }
-            }
+
             if (!!provenEvent) {
                 const finalizedEvent = finalizedWithdrawals.find(
                     (e) => e!.withdrawalHash === withdrawalHashCandidate
