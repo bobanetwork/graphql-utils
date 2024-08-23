@@ -341,15 +341,8 @@ export class AnchorageGraphQLService extends GraphQLService {
     ) {
         const provider =
             status !== WithdrawState.initialized ? l1Provider : l2Provider
-        console.log(`trx transactionHash_`, event.transactionHash_)
         const transaction = await provider!.getTransaction(event.transactionHash_)
         const block = await provider!.getBlock(transaction?.blockNumber)
-
-        console.log({
-            transactionHash: event.transactionHash_,
-            transaction,
-            block
-        })
 
         return {
             timeStamp: block.timestamp,
@@ -568,7 +561,7 @@ export class AnchorageGraphQLService extends GraphQLService {
 export const anchorageGraphQLService = new AnchorageGraphQLService()
 
 
-//#region utils
+//#region utils unused
 export const approvalRequired = async (networkService: MinimalNetworkService, L2StandardERC20ABI: any, token, amount) => {
     try {
         if (
@@ -595,7 +588,7 @@ export const approvalRequired = async (networkService: MinimalNetworkService, L2
         return false
     }
 }
-
+// NOTE: Moved to gateway already so can cleanup with bnb testnet
 export const handleInitiateWithdrawal = async (networkService: MinimalNetworkService, L2StandardERC20ABI: any, amount: string, token?: any) => {
     try {
         const signer = networkService.provider?.getSigner()
@@ -642,6 +635,7 @@ export const handleInitiateWithdrawal = async (networkService: MinimalNetworkSer
     }
 }
 
+// NOTE: Moved to gateway already so can cleanup
 export const handleProveWithdrawal = async (
     networkService: MinimalNetworkService,
     txInfo: IHandleProveWithdrawalConfig
@@ -760,7 +754,7 @@ export const handleProveWithdrawal = async (
         throw new Error('Failed to prove withdrawal!')
     }
 }
-
+// NOTE: Moved to gateway already so can cleanup
 export const claimWithdrawal = async (networkService: MinimalNetworkService, logs: GQL2ToL1MessagePassedEvent[]) => {
     const gasEstimationFinalSubmit = async () => {
         if (!networkService.OptimismPortal || !logs[0]) {
