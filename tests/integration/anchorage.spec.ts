@@ -14,6 +14,16 @@ describe('Anchorage: Integration Test', function () {
         expect(res[0].block_number).toBeDefined();
         expect(res[0].timestamp_).toBeDefined();
     });
+    it('should find: WithdrawalsInitiatedBnb Events', async () => {
+        const res = await anchorageGraphQLService
+            .findWithdrawalsInitiatedBnb(
+                "0x77151218e325b201addd457a5940d823b3daa2cd",
+                9728)
+        expect(res[0].__typename).toEqual('ETHBridgeInitiated')
+        expect(res[0].transactionHash_).not.toBeDefined();
+        expect(res[0].block_number).toBeDefined();
+        expect(res[0].timestamp_).toBeDefined();
+    });
     it('should find: WithdrawalProven Events', async () => {
         const res = await anchorageGraphQLService
             .findWithdrawalsProven(
