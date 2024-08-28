@@ -5,6 +5,7 @@ export enum EGraphQLService {
     AnchorageBridge = 1,
     LightBridge = 2,
     DAO = 3,
+    DisputeGameFactory = 4
 }
 
 export type MinimalNetworkConfig = {

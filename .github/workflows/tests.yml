@@ -5,9 +5,9 @@ name: Run tests
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "*" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "*" ]
 
 jobs:
   build:
@@ -28,3 +28,5 @@ jobs:
         cache: 'npm'
     - run: npm i
     - run: npm test
+      env:
+        REACT_APP_THE_GRAPH_API_KEY: ${{ secrets.THE_GRAPH_API_KEY }}

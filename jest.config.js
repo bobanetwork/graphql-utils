@@ -1,4 +1,4 @@
-const { defaults } = require('jest-config')
+import { defaults } from 'jest-config';
 
 /** @type {import('jest').Config} */
 const config = {
@@ -18,7 +18,8 @@ const config = {
     "json-summary",
     "text",
     "lcov"
-  ]
-}
+  ],
+  testTimeout: 60000,
+};
 
-module.exports = config
+export default config;
