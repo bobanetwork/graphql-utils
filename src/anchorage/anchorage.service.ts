@@ -414,10 +414,8 @@ export class AnchorageGraphQLService extends GraphQLService {
         const messagesPassed = await this.findWithdrawalMessagesPassed(withdrawalsInitiated.map((wI) => wI.block_number), l2ChainId)
         const withdrawalHashes = messagesPassed.map((mP) => mP.withdrawalHash)
         const provenWithdrawals = await this.findWithdrawalsProven(withdrawalHashes, l1ChainId)
-        console.log(`provenWithdrawals`, provenWithdrawals)
         const finalizedWithdrawals =
             await this.findWithdrawalsFinalized(withdrawalHashes, l1ChainId)
-        console.log(`finalizedWithdrawals`, finalizedWithdrawals)
 
         const withdrawalTransactions: any[] = []
         for (const withdrawalHashCandidate of withdrawalHashes) {
