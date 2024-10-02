@@ -70,7 +70,7 @@ export class GraphQLService {
                 gql: this.withSubgraphId('C3ShFVy1GV81GUb9u3Zw1rSQ7oJjegSF3LswvvYa3XgD'),
             },
             [EGraphQLService.AnchorageBridge]: {
-                gql: 'https://graphql.bnb.boba.network/subgraphs/name/anchorage-bridging-boba-bnb',
+                gql: this.withSubgraphId('BmJU8RagxZSKoxwYFVScC7TaJZj9PHGvukXiJhES882a'),
             },
         },
         // BSC
@@ -97,7 +97,7 @@ export class GraphQLService {
                 local: 'http://127.0.0.1:8002/subgraphs/name/boba/Bridges',
             },
             [EGraphQLService.AnchorageBridge]: {
-                gql: 'https://graphql.testnet.bnb.boba.network/subgraphs/name/anchorage-bridging-boba-bnb-testnet/',
+                gql: this.withSubgraphId('46zszHi762PDutPntNcsLSDvms4eufEugwb26DkVCyzW'),
             },
         },
         // Arbitrum Sepolia
@@ -130,7 +130,7 @@ export class GraphQLService {
         // Boba Sepolia
         28882: {
             [EGraphQLService.AnchorageBridge]: {
-                gql: 'https://graphql.sepolia.boba.network/subgraphs/name/anchorage-bridging-sepolia',
+                gql: this.withSubgraphId('AKb9A3KPkMtwm9TPMtUxKH75yZXHyrY5PCwwCcmzQpMj'),
             },
             [EGraphQLService.LightBridge]: {
                 gql: this.withSubgraphId('CdmAWxs3LDCnm4jekfcdPxaLsFynuZ3XgeuM7AcdU3xr'),
