@@ -19,7 +19,7 @@ if (!fetchLib) {
 export class GraphQLService {
     private readonly apikey = process.env.REACT_APP_THE_GRAPH_API_KEY
 
-    private readonly uri = `https://gateway-arbitrum.network.thegraph.com/api/${this.apikey}/subgraphs/id`
+    private readonly uri = `https://gateway.thegraph.com/api/${this.apikey}/subgraphs/id`
 
     private withSubgraphId(subgraphId: string) {
         return `${this.uri}/${subgraphId}`
