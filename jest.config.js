@@ -20,6 +20,7 @@ const config = {
     "lcov"
   ],
   testTimeout: 60000,
+  setupFiles: ['<rootDir>/jest.setup.js']
 };
 
 export default config;

@@ -17,9 +17,6 @@ importers:
       '@types/jest':
         specifier: ^29.5.12
         version: 29.5.12
-      dotenv:
-        specifier: ^16.4.5
-        version: 16.4.5
       ethers:
         specifier: ^5.5.4
         version: 5.7.2
@@ -39,6 +36,9 @@ importers:
       '@types/node-fetch':
         specifier: ^2.6.11
         version: 2.6.11
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@16.18.90)

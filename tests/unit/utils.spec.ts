@@ -1,4 +1,4 @@
-const {filterLatestGroupedSupportedTokens} = require("../../src/utils");
+const { filterLatestGroupedSupportedTokens } = require("../../src/utils");
 
 describe('GraphQL Utils', () => {
     it('should return the latest supported events only', () => {

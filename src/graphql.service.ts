@@ -19,7 +19,7 @@ if (!fetchLib) {
 export class GraphQLService {
     private readonly apikey = process.env.REACT_APP_THE_GRAPH_API_KEY
 
-    private readonly uri = `https://gateway-arbitrum.network.thegraph.com/api/${this.apikey}/subgraphs/id`
+    private readonly uri = `https://gateway.thegraph.com/api/${this.apikey}/subgraphs/id`
 
     private withSubgraphId(subgraphId: string) {
         return `${this.uri}/${subgraphId}`
@@ -67,11 +67,10 @@ export class GraphQLService {
         // Boba BNB
         56288: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://graphql.bnb.boba.network/subgraphs/name/boba-bnb-l2/',
-                local: '',
+                gql: this.withSubgraphId('C3ShFVy1GV81GUb9u3Zw1rSQ7oJjegSF3LswvvYa3XgD'),
             },
             [EGraphQLService.AnchorageBridge]: {
-                gql: 'https://graphql.bnb.boba.network/subgraphs/name/anchorage-bridging-boba-bnb',
+                gql: this.withSubgraphId('BmJU8RagxZSKoxwYFVScC7TaJZj9PHGvukXiJhES882a'),
             },
         },
         // BSC
@@ -94,11 +93,11 @@ export class GraphQLService {
         // Boba BNB testnet
         9728: {
             [EGraphQLService.LightBridge]: {
-                gql: 'https://graphql.testnet.bnb.boba.network/subgraphs/name/boba-bnb-l2-testnet/',
+                gql: this.withSubgraphId('HnbxKbpVhKeAWQ6jGUZ64wsjcsnEtyyVqU6QMiAsyPR7'),
                 local: 'http://127.0.0.1:8002/subgraphs/name/boba/Bridges',
             },
             [EGraphQLService.AnchorageBridge]: {
-                gql: 'https://graphql.testnet.bnb.boba.network/subgraphs/name/anchorage-bridging-boba-bnb-testnet/',
+                gql: this.withSubgraphId('46zszHi762PDutPntNcsLSDvms4eufEugwb26DkVCyzW'),
             },
         },
         // Arbitrum Sepolia
@@ -131,10 +130,10 @@ export class GraphQLService {
         // Boba Sepolia
         28882: {
             [EGraphQLService.AnchorageBridge]: {
-                gql: 'https://graphql.sepolia.boba.network/subgraphs/name/anchorage-bridging-sepolia',
+                gql: this.withSubgraphId('AKb9A3KPkMtwm9TPMtUxKH75yZXHyrY5PCwwCcmzQpMj'),
             },
             [EGraphQLService.LightBridge]: {
-                gql: 'https://graphql.sepolia.boba.network/subgraphs/name/light-bridge-boba-sepolia',
+                gql: this.withSubgraphId('CdmAWxs3LDCnm4jekfcdPxaLsFynuZ3XgeuM7AcdU3xr'),
                 local: '',
             },
         },
