@@ -40,74 +40,88 @@ const l1NetworkMap = [
     {
         fromAddress: "0x3256bd6fc8b5fa48db95914d0df314465f3f7879",
         chainId: 1,
-        networkName: 'ETH Mainnet'
+        networkName: 'ETH Mainnet',
+        withdrawalHash: ["0xf9ee30fb9e9da3b68ed392927bf7fdfc07239c2ac91cde3b30296b326ddf2333"]
     },
     {
         fromAddress: "0x9703d3b2521f3de2d56831f3df9490cbb1487428",
         chainId: 11155111,
-        networkName: 'Sepolia'
+        networkName: 'Sepolia',
+        withdrawalHash: ["0x93af1218baa50ff136e9b231360ad727828add096d6035eeae64416194706b11"]
     },
     {
         fromAddress: "0x9703d3b2521f3de2d56831f3df9490cbb1487428",
         chainId: 97,
-        networkName: 'BNB Testnet'
+        networkName: 'BNB Testnet',
+        withdrawalHash: ["0x0a41cc0067341b3cf425c14183ffce33d1f1c454587d949b1ee00d9fffd2d243"]
     },
 ]
 
-describe('Anchorage: Integration Test', function () {
-    it('should find: WithdrawalProven Events', async () => {
-        const res = await anchorageGraphQLService
-            .findWithdrawalsProven(
-                ["0x5af94d274be0e1a51f32e056deaa3d9dcd6749af3507a9f457985271d971474a"],
-                1)
-
-        expect(res[0].__typename).toEqual('WithdrawalProven')
-        expect(res[0].transactionHash_).toBeDefined();
-        expect(res[0].withdrawalHash).toEqual('0x5af94d274be0e1a51f32e056deaa3d9dcd6749af3507a9f457985271d971474a');
-    });
-    it('should find: WithdrawalFinalized Events', async () => {
-        const res = await anchorageGraphQLService
-            .findWithdrawalsFinalized(
-                ["0xf9ee30fb9e9da3b68ed392927bf7fdfc07239c2ac91cde3b30296b326ddf2333", "0x10b3b0f1b2d20017e1c1036e1f57a7f0876c62dbf93a2bbeea8010a3fcffe4b2"],
-                1)
-
-        expect(res[0].__typename).toEqual('WithdrawalFinalized')
-        expect(res[0].transactionHash_).toBeDefined();
-        expect(res[0].block_number).toBeDefined();
-        expect(res[0].timestamp_).toBeDefined();
-        expect(res[0].withdrawalHash).toEqual('0xf9ee30fb9e9da3b68ed392927bf7fdfc07239c2ac91cde3b30296b326ddf2333');
-    });
-    it('should find: MessagePassed Events via WithdrawalHash', async () => {
-        const res = await anchorageGraphQLService.findWithdrawalMessagedPassed(
-            '0x15fd4589111a601b83ce513c508ceb0fb6dbafa5b4f5b42f24bc793eebc67e72',
-            288)
-
-        expect(res[0].__typename).toEqual("MessagePassed");
-        expect(res[0].transactionHash_).toEqual("0x00182e7e904c2a1947c372c21cd1e0efde36badfa249552869861c588c5facf9")
-        expect(res[0].timestamp_).toEqual("1717425069")
-    });
-    it('should find: DepositTransactions, map them and return the transactions', async () => {
-        const res = await anchorageGraphQLService.queryDepositTransactions(
-            new JsonRpcProvider("https://boba-ethereum.gateway.tenderly.co"),
-            "0xd134a7d9485c1aac0cbf82718cf6d6e3fd130945",
-            {
-                L1: {
-                    chainId: 1,
-                    name: "name"
-                },
-                L2: {
-                    chainId: 288,
-                    name: "name"
-                }
+const depositNeworkMap = [
+    {
+        fromAddress: "0xd134a7d9485c1aac0cbf82718cf6d6e3fd130945",
+        name: "Mainnet L1 => L2",
+        config: {
+            L1: {
+                chainId: 1,
+                name: "ETH Mainnet"
+            },
+            L2: {
+                chainId: 288,
+                name: "Boba ETH"
             }
-        )
+        }
+    },
+    {
+        fromAddress: "0xcba34cb1524a00cda30de92e373261f76abd5014",
+        name: "Sepolia L1 => L2",
+        config: {
+            L1: {
+                chainId: 11155111,
+                name: "ETH Sepolia"
+            },
+            L2: {
+                chainId: 28882,
+                name: "Boba ETH Sepolia"
+            }
+        }
+    },
+    {
+        fromAddress: "0x9703d3b2521f3de2d56831f3df9490cbb1487428",
+        name: "BNB Testnet L1 => L2",
+        config: {
+            L1: {
+                chainId: 97,
+                name: "BNB Testnet"
+            },
+            L2: {
+                chainId: 9728,
+                name: "Boba BNB Testnet"
+            }
+        }
+    }
+]
 
-        expect(res[0].originChainId).toEqual(1);
-        expect(res[0].destinationChainId).toEqual(288);
-        expect(res[0].from).toEqual("0xd134a7d9485c1aac0cbf82718cf6d6e3fd130945");
-        expect(res[0].to).toEqual("0xd134a7d9485c1aac0cbf82718cf6d6e3fd130945");
-        expect(res[0].action.status).toEqual("succeeded");
-    });
+describe('Anchorage Service: Integration Test', function () {
+
+    describe('should find: DepositFinalized txs', () => {
+        depositNeworkMap.forEach((info) => {
+            it(`${info.name}`, async () => {
+                const res = await anchorageGraphQLService.queryDepositTransactions(
+                    new JsonRpcProvider("https://boba-ethereum.gateway.tenderly.co"),
+                    info.fromAddress,
+                    info.config
+                )
+
+                expect(res[0].originChainId).toBeDefined();
+                expect(res[0].destinationChainId).toBeDefined();
+                expect(res[0].from).toEqual(info.fromAddress);
+                expect(res[0].to).toEqual(info.fromAddress);
+                expect(res[0].action.status).toEqual("succeeded");
+            });
+        })
+    })
+
 
     describe('should find WithdrawalsInitiated events', () => {
         l2NetworkMap.forEach((info) => {
@@ -140,7 +154,6 @@ describe('Anchorage: Integration Test', function () {
                         info.chainId)
                 const ethRes = res.find((d: any) => d.__typename === "ETHBridgeInitiated")
                 const ercRes = res.find((d: any) => d.__typename === "ERC20BridgeInitiated")
-                console.log(ethRes);
                 expect(ethRes.__typename).toEqual('ETHBridgeInitiated')
                 expect(ethRes.block_number).toBeDefined();
                 expect(ethRes.timestamp_).toBeDefined();
@@ -152,7 +165,7 @@ describe('Anchorage: Integration Test', function () {
         })
     })
 
-    describe('MessagePassed Events', () => {
+    describe('should find MessagePassed Events', () => {
         l2NetworkMap.forEach((info) => {
             if (info.chainId === 56288) {
                 // skip incase of mainnet bnb as anchorage yet to be release on bnb mainnet.
@@ -179,4 +192,29 @@ describe('Anchorage: Integration Test', function () {
         })
     })
 
+    describe('should find: WithdrawalProven Events', () => {
+        l1NetworkMap.forEach((info) => {
+            it(`${info.networkName}`, async () => {
+                const res = await anchorageGraphQLService
+                    .findWithdrawalsProven(info.withdrawalHash, info.chainId)
+
+                expect(res[0].__typename).toEqual('WithdrawalProven')
+                expect(res[0].transactionHash_).toBeDefined();
+                expect(res[0].withdrawalHash).toEqual(info.withdrawalHash[0]);
+            });
+        })
+    })
+    describe('should find: WithdrawalFinalized Events', () => {
+        l1NetworkMap.forEach((info) => {
+            it(`${info.networkName}`, async () => {
+                const res = await anchorageGraphQLService
+                    .findWithdrawalsFinalized(info.withdrawalHash, info.chainId)
+
+                expect(res[0].__typename).toEqual('WithdrawalFinalized')
+                expect(res[0].transactionHash_).toBeDefined();
+                expect(res[0].withdrawalHash).toEqual(info.withdrawalHash[0]);
+                expect(res[0].success).toBeTruthy();
+            });
+        })
+    })
 });
