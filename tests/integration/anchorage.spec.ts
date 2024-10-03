@@ -109,7 +109,7 @@ describe('Anchorage: Integration Test', function () {
         expect(res[0].action.status).toEqual("succeeded");
     });
 
-    describe('should find WITHDRAWALSINITIATED events', () => {
+    describe('should find WithdrawalsInitiated events', () => {
         l2NetworkMap.forEach((info) => {
             test(`${info.networkName}`, async () => {
                 const res = await anchorageGraphQLService
