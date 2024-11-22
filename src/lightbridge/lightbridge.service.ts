@@ -83,7 +83,6 @@ export class LightBridgeGraphQLService extends GraphQLService {
         sourceChainId: number | string,
         destChainId: number | string,
         token: string,
-        amount: number | string,
         depositId: number | string
     ): Promise<LightBridgeDisbursementSuccessEvent | undefined> {
         if (!token) {
@@ -92,7 +91,7 @@ export class LightBridgeGraphQLService extends GraphQLService {
         const query =
             gql(`query Teleportation($wallet: String!, $sourceChainId: BigInt!, $token: String!, $amount: String!, $depositId: String!) {
   disbursementSuccesses(
-    where: { and: [{ to_contains: $wallet }, { sourceChainId: $sourceChainId }, { token_contains: $token }, { amount: $amount }, { depositId: $depositId }] }
+    where: { and: [{ to_contains: $wallet }, { sourceChainId: $sourceChainId }, { token_contains: $token }, { depositId: $depositId }] }
   ) {
     depositId
     to
@@ -110,7 +109,6 @@ export class LightBridgeGraphQLService extends GraphQLService {
             wallet: walletAddress,
             sourceChainId: sourceChainId.toString(),
             token,
-            amount: amount.toString(),
             depositId: depositId.toString(),
         }
         const events = retainOldStructure((
@@ -133,13 +131,12 @@ export class LightBridgeGraphQLService extends GraphQLService {
         walletAddress: string,
         sourceChainId: number | string,
         destChainId: number | string,
-        amount: number | string,
         depositId: number | string
     ): Promise<LightBridgeDisbursementFailedEvent | undefined> {
         const query =
             gql(`query Teleportation($wallet: String!, $sourceChainId: BigInt!, $amount: String!, $depositId: String!) {
   disbursementFaileds(
-    where: { and: [{ to_contains: $wallet }, { sourceChainId: $sourceChainId }, { amount: $amount }, { depositId: $depositId }] }
+    where: { and: [{ to_contains: $wallet }, { sourceChainId: $sourceChainId }, { depositId: $depositId }] }
   ) {
     depositId
     to
@@ -155,7 +152,6 @@ export class LightBridgeGraphQLService extends GraphQLService {
         const variables = {
             wallet: walletAddress,
             sourceChainId: sourceChainId.toString(),
-            amount: amount.toString(),
             depositId: depositId.toString(),
         }
         const events = retainOldStructure((
@@ -184,13 +180,12 @@ export class LightBridgeGraphQLService extends GraphQLService {
         walletAddress: string,
         sourceChainId: number | string,
         destChainId: number | string,
-        amount: number | string,
         depositId: number | string
     ): Promise<LightBridgeDisbursementRetrySuccessEvent | undefined> {
         const query =
             gql(`query Teleportation($wallet: String!, $sourceChainId: BigInt!, $amount: String!, $depositId: String!) {
   disbursementRetrySuccesses(
-    where: { and: [{ to_contains: $wallet }, { sourceChainId: $sourceChainId }, { amount: $amount }, { depositId: $depositId }] }
+    where: { and: [{ to_contains: $wallet }, { sourceChainId: $sourceChainId }, { depositId: $depositId }] }
   ) {
     depositId
     to
@@ -206,7 +201,6 @@ export class LightBridgeGraphQLService extends GraphQLService {
         const variables = {
             wallet: walletAddress,
             sourceChainId: sourceChainId.toString(),
-            amount: amount.toString(),
             depositId: depositId.toString(),
         }
         const events = retainOldStructure((
