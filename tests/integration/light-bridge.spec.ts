@@ -31,7 +31,6 @@ describe('LightBridge Integration Test', function () {
                 28882,
                 11155111,
                 '0x0000000000000000000000000000000000000000',
-                "2000000000000000000",
                 "3");
 
         expect(res.__typename).toEqual("DisbursementSuccess")
