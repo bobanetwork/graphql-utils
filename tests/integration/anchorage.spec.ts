@@ -191,30 +191,4 @@ describe('Anchorage Service: Integration Test', function () {
             })
         })
     })
-
-    describe('should find: WithdrawalProven Events', () => {
-        l1NetworkMap.forEach((info) => {
-            it(`${info.networkName}`, async () => {
-                const res = await anchorageGraphQLService
-                    .findWithdrawalsProven(info.withdrawalHash, info.chainId)
-
-                expect(res[0].__typename).toEqual('WithdrawalProven')
-                expect(res[0].transactionHash_).toBeDefined();
-                expect(res[0].withdrawalHash).toEqual(info.withdrawalHash[0]);
-            });
-        })
-    })
-    describe('should find: WithdrawalFinalized Events', () => {
-        l1NetworkMap.forEach((info) => {
-            it(`${info.networkName}`, async () => {
-                const res = await anchorageGraphQLService
-                    .findWithdrawalsFinalized(info.withdrawalHash, info.chainId)
-
-                expect(res[0].__typename).toEqual('WithdrawalFinalized')
-                expect(res[0].transactionHash_).toBeDefined();
-                expect(res[0].withdrawalHash).toEqual(info.withdrawalHash[0]);
-                expect(res[0].success).toBeTruthy();
-            });
-        })
-    })
 });

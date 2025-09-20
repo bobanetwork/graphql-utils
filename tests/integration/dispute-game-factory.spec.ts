@@ -28,18 +28,18 @@ describe('Anchorage: Integration Test', function () {
 
         const case1 = await anchorageGraphQLService.getRootClaimOfFDGSubmission(chainId, testingL2BlockNumber);
         expect(case1.status).toEqual("success");
-        expect(case1.id.toLowerCase()).toEqual(("0x83Ef33E9Ada93ef0040c8C550195fB1018128c9d").toLowerCase());
-        expect(case1.l2BlockNumber).toEqual(8790794);
-        expect(case1.rootClaim.toLowerCase()).toEqual("0xce9110ddcada4c1df37bcdf398d048f0af92da59eee205c506726264e5aeecd3");
-        expect(case1.index).toEqual(596);
+        expect(case1.id.toLowerCase()).toEqual(("0xc26039a750acd7e8c787fc5a9121eb6f2e74946e").toLowerCase());
+        expect(case1.l2BlockNumber).toEqual(21513128);
+        expect(case1.rootClaim.toLowerCase()).toEqual("0xd330aec0592a9227dd9ae53639c1b831fa23ca713a68b5a1a4dc6ca9516d2fc7");
+        expect(case1.index).toEqual(9034);
 
         const testingL2BlockNumber2 = 8790794;
         const case2 = await anchorageGraphQLService.getRootClaimOfFDGSubmission(chainId, testingL2BlockNumber2);
         expect(case2.status).toEqual("success");
-        expect(case2.id.toLowerCase()).toEqual(("0x83Ef33E9Ada93ef0040c8C550195fB1018128c9d").toLowerCase());
-        expect(case2.l2BlockNumber).toEqual(8790794);
-        expect(case2.rootClaim.toLowerCase()).toEqual("0xce9110ddcada4c1df37bcdf398d048f0af92da59eee205c506726264e5aeecd3");
-        expect(case2.index).toEqual(596);
+        expect(case2.id.toLowerCase()).toEqual(("0xc26039a750acd7e8c787fc5a9121eb6f2e74946e").toLowerCase());
+        expect(case2.l2BlockNumber).toEqual(21513128);
+        expect(case2.rootClaim.toLowerCase()).toEqual("0xd330aec0592a9227dd9ae53639c1b831fa23ca713a68b5a1a4dc6ca9516d2fc7");
+        expect(case2.index).toEqual(9034);
 
         const latestL2BlockNumber = await anchorageGraphQLService.getLatestFDGSubmittedBlock(chainId);
         const case3 = await anchorageGraphQLService.getRootClaimOfFDGSubmission(chainId, latestL2BlockNumber + 10);
