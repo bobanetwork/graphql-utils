@@ -3,12 +3,12 @@ import {lightBridgeGraphQLService} from "../../src";
 describe('LightBridge Integration Test', function () {
     it('should query AssetReceivedEvent with sorting parameters', async () => {
         const res = await lightBridgeGraphQLService.queryAssetReceivedEvent(
+            1,
             288,
             null,
             null,
             null,
-            null,
-            null,
+            3640,
             null,
             'depositId',
             'asc',
@@ -27,6 +27,8 @@ describe('LightBridge Integration Test', function () {
         expect(res[0].timestamp_).toBeDefined();
 
         expect(res.length).toBeLessThanOrEqual(100);
+
+        console.log(res);
 
         if (res.length > 1) {
             expect(Number(res[0].depositId)).toBeLessThanOrEqual(Number(res[1].depositId));
