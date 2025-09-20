@@ -21,6 +21,9 @@ export class LightBridgeGraphQLService extends GraphQLService {
         toBlock?: string | number,
         minDepositId?: string | number,
         contract?: string,
+        orderBy?: string,
+        orderDirection?: 'asc' | 'desc',
+        first?: number
     ): Promise<LightBridgeAssetReceivedEvent[]> {
         // contract:  in the graph it is case insensitive and nocase only exists in Goldsky
         const query = gql(`query Teleportation(
@@ -42,6 +45,9 @@ export class LightBridgeGraphQLService extends GraphQLService {
               ${targetChainId ? `{ toChainId: $targetChainId },` : ''}
               ${contract ? `{ contract: $contract }` : ''}
               ]}
+              ${orderBy ? `orderBy: ${orderBy}` : ''}
+              ${orderDirection ? `orderDirection: ${orderDirection}` : ''}
+              ${first ? `first: ${first}` : ''}
             ) {
               token
               sourceChainId
