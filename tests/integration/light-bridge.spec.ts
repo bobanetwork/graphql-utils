@@ -28,8 +28,6 @@ describe('LightBridge Integration Test', function () {
 
         expect(res.length).toBeLessThanOrEqual(100);
 
-        console.log(res);
-
         if (res.length > 1) {
             expect(Number(res[0].depositId)).toBeLessThanOrEqual(Number(res[1].depositId));
         }
