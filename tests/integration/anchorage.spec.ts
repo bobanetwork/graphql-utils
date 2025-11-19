@@ -11,28 +11,12 @@ const l2NetworkMap = [
         blocks: ["3210114"]
     },
     {
-        fromAddress: "0x78b4507e3303caa40d20c23316e2f5795857ab85",
-        chainId: 56288,
-        networkName: 'Boba BNB',
-        isBnb: true,
-        blocks: [],
-        withdrawalHash: ''
-    },
-    {
         fromAddress: "0x81654daa2e297a140ca01f12367a4d9c9fc2bf51",
         chainId: 28882,
         networkName: 'Boba Sepolia',
         isBnb: false,
         withdrawalHash: "0xf641739d3dbb873ec526178b01d6162143a981488d0333f314b19533e1e1864b",
         blocks: ["3876531"]
-    },
-    {
-        fromAddress: "0x9703d3b2521f3de2d56831f3df9490cbb1487428",
-        chainId: 9728,
-        networkName: 'Boba BNB Testnet',
-        isBnb: true,
-        withdrawalHash: "0x02769bf89904174f8a4bf3da22b7c8dad6dccd5683ac4350874317f69be25b18",
-        blocks: ["715312"]
     },
 ]
 
@@ -83,20 +67,6 @@ const depositNeworkMap = [
             L2: {
                 chainId: 28882,
                 name: "Boba ETH Sepolia"
-            }
-        }
-    },
-    {
-        fromAddress: "0x9703d3b2521f3de2d56831f3df9490cbb1487428",
-        name: "BNB Testnet L1 => L2",
-        config: {
-            L1: {
-                chainId: 97,
-                name: "BNB Testnet"
-            },
-            L2: {
-                chainId: 9728,
-                name: "Boba BNB Testnet"
             }
         }
     }
